@@ -1,5 +1,9 @@
 package no.hig.GlenGrongan.IrcClient;
 
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+
 import jerklib.ConnectionManager;
 import jerklib.Profile;
 import jerklib.events.IRCEvent;
@@ -9,10 +13,12 @@ import jerklib.listeners.IRCEventListener;
 
 
 public class ConnectionSetup implements IRCEventListener{
-	public ConnectionSetup()
+	JTextPane inText;
+	public ConnectionSetup(String server, String nickName, JTextPane textPane)
 	{
-		ConnectionManager conman = new ConnectionManager(new Profile("jerkbot"));
-		conman.requestConnection("chat.freenode.net").addIRCEventListener(this);
+		inText = textPane;
+		ConnectionManager conman = new ConnectionManager(new Profile(nickName));
+		conman.requestConnection(server).addIRCEventListener(this);
 	}
  
 	public void receiveEvent(IRCEvent e)
@@ -30,10 +36,15 @@ public class ConnectionSetup implements IRCEventListener{
 		else
 		{
 			System.out.println(e.getType() + " : " + e.getRawEventData());
+			SimpleAttributeSet sas = new SimpleAttributeSet ();
+			int pos = inText.getStyledDocument().getEndPosition().getOffset();
+		    try {
+		    	// add the text to the document
+		    	inText.getStyledDocument().insertString(pos, e.getType() + " : " + e.getRawEventData()+"\n", sas);
+		    } catch (BadLocationException ble) {
+		    	ble.printStackTrace();
+		    }
+			
 		}
-	}
-	
-	public static void main(String[] args){
-		ConnectionSetup cs = new ConnectionSetup();
 	}
 }
