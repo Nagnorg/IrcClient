@@ -15,23 +15,21 @@ import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 /**
  * Class containing creation of GUI and most of its handling for the IRC client.
- * @version 0.1
+ * @version 0.2
  * @author Glen & Martin
  *
  */
 public class IrcClientWorkspace extends JFrame{
 	JPanel serverListPanel;
-	JTextPane inText;
-	JTextField outText;
-	JButton sendButton;
-	JScrollPane textScrollPane;
+	ChatWindow chatWindow;
 	public IrcClientWorkspace(){
 		setLayout(new BorderLayout());
 		add(serverListPanel = new JPanel(), BorderLayout.WEST);
 		serverListPanel.setLayout(new BorderLayout());
 		serverListPanel.add(new JLabel("IRC servers"), BorderLayout.NORTH);
 		
-		add(createChatWindow(), BorderLayout.CENTER);
+		add(chatWindow = new ChatWindow(), BorderLayout.CENTER);
+		
 
 		
 		JToolBar workspaceToolbar = createToolbar();
@@ -57,25 +55,6 @@ public class IrcClientWorkspace extends JFrame{
 		
 	}
 	
-	private JPanel createChatWindow(){
-		JPanel layout = new JPanel();
-		layout.setLayout(new BorderLayout());
-		layout.add (textScrollPane = new JScrollPane (inText = new JTextPane()), BorderLayout.CENTER);
-		inText.setEditable(false);
-		layout.add(createOutTextPanel(), BorderLayout.SOUTH);
-		
-		return layout;
-	}
-	
-	private JPanel createOutTextPanel(){
-		JPanel layout = new JPanel();
-		layout.setLayout(new BorderLayout());
-		layout.add(outText = new JTextField(), BorderLayout.CENTER);
-		layout.add(sendButton = new JButton("Send"), BorderLayout.EAST);
-		
-		return layout;
-	}
-	
 	private void createMenu(){}
 
 	class NewConnection implements ActionListener{
@@ -83,7 +62,7 @@ public class IrcClientWorkspace extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JFrame connectionWindow = new JFrame();
-			ConnectOptions options = new ConnectOptions(inText);
+			ConnectOptions options = new ConnectOptions(chatWindow);
 			connectionWindow.add(options, BorderLayout.NORTH);
 			connectionWindow.pack();
 			connectionWindow.setVisible(true);
