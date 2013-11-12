@@ -20,11 +20,11 @@ import jerklib.listeners.IRCEventListener;
 
 public class ConnectionSetup implements IRCEventListener{
 	ChatWindow chatWindow;
-	public ConnectionSetup(String server, String nickName, ChatWindow chat)
+	public ConnectionSetup(String server, ConnectionManager conMan, ChatWindow chat)
 	{
 		chatWindow = chat;
-		ConnectionManager conman = new ConnectionManager(new Profile(nickName));
-		conman.requestConnection(server).addIRCEventListener(this);
+		ConnectionManager conManager = conMan;
+		conManager.requestConnection(server).addIRCEventListener(this);
 	}
  
 	public void receiveEvent(IRCEvent e)

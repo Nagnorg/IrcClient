@@ -13,6 +13,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+
+import jerklib.ConnectionManager;
+import jerklib.Profile;
 /**
  * Class containing creation of GUI and most of its handling for the IRC client.
  * @version 0.2
@@ -22,6 +25,8 @@ import javax.swing.JToolBar;
 public class IrcClientWorkspace extends JFrame{
 	JPanel serverListPanel;
 	ChatWindow chatWindow;
+	ConnectOptions cOptions;
+	ConnectionManager conManager;
 	public IrcClientWorkspace(){
 		setLayout(new BorderLayout());
 		add(serverListPanel = new JPanel(), BorderLayout.WEST);
@@ -62,10 +67,24 @@ public class IrcClientWorkspace extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JFrame connectionWindow = new JFrame();
-			ConnectOptions options = new ConnectOptions(chatWindow);
-			connectionWindow.add(options, BorderLayout.NORTH);
+			cOptions = new ConnectOptions();
+			connectionWindow.add(cOptions, BorderLayout.NORTH);
 			connectionWindow.pack();
+			cOptions.getConnectButton().addActionListener(new CreateSession());
 			connectionWindow.setVisible(true);
+		}
+		
+	}
+	class CreateSession implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(conManager == null)
+			{
+				conManager = new ConnectionManager(new Profile(cOptions.getInsertNick().getText(), cOptions.getInsertAlternative().getText()));
+			}
+			ConnectionSetup newConnection = new ConnectionSetup(((String)cOptions.getNetworkChosen().getSelectedItem()), conManager, chatWindow);
+			
 		}
 		
 	}
