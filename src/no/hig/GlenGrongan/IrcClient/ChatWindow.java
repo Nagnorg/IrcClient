@@ -1,6 +1,8 @@
 package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -12,6 +14,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 
+import jerklib.Channel;
+import jerklib.Session;
+
 /**
  * Class containing and managing all chat functionality
  * @author Glen
@@ -22,6 +27,8 @@ public class ChatWindow extends JPanel{
 	JTextField outText;
 	JButton sendButton;
 	JScrollPane textScrollPane;
+	Session session;
+	Channel channel;
 	
 	public ChatWindow(){
 		setLayout(new BorderLayout());
@@ -35,6 +42,7 @@ public class ChatWindow extends JPanel{
 		layout.setLayout(new BorderLayout());
 		layout.add(outText = new JTextField(), BorderLayout.CENTER);
 		layout.add(sendButton = new JButton("Send"), BorderLayout.EAST);
+		sendButton.addActionListener(new sendEvent());
 		
 		return layout;
 	}
@@ -61,6 +69,8 @@ public class ChatWindow extends JPanel{
 	        }
 	    });
 	}
+	
+	
 	/**
 	 * @return the textpane
 	 */
@@ -80,5 +90,27 @@ public class ChatWindow extends JPanel{
 	 */
 	public JScrollPane getTextScrollPane() {
 		return textScrollPane;
+	}
+	
+	public void setSession(Session s){
+		session = s;
+	}
+	
+	public void setChannel(Channel c){
+		channel = c;
+	}
+	class sendEvent implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String message = outText.getText();
+			if(message.startsWith("/")){
+				
+			}
+			else{
+				channel.say(outText.getText());
+			}
+		
+		}
 	}
 }

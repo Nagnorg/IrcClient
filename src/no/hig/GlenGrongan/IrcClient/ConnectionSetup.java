@@ -9,6 +9,7 @@ import javax.swing.text.SimpleAttributeSet;
 
 import jerklib.ConnectionManager;
 import jerklib.Profile;
+import jerklib.Session;
 import jerklib.events.IRCEvent;
 import jerklib.events.JoinCompleteEvent;
 import jerklib.events.IRCEvent.Type;
@@ -24,7 +25,9 @@ public class ConnectionSetup implements IRCEventListener{
 	{
 		chatWindow = chat;
 		ConnectionManager conManager = conMan;
-		conManager.requestConnection(server).addIRCEventListener(this);
+		Session session = conManager.requestConnection(server);
+		session.addIRCEventListener(this);
+		chatWindow.setSession(session);
 	}
  
 	public void receiveEvent(IRCEvent e)
@@ -32,13 +35,18 @@ public class ConnectionSetup implements IRCEventListener{
 		String message;
 		if(e.getType() == Type.CONNECT_COMPLETE)
 		{
-			e.getSession().join("#chat");
+			e.getSession().join("#jerklib");
  
 		}
 		else if(e.getType() == Type.JOIN_COMPLETE)
 		{
 			JoinCompleteEvent jce = (JoinCompleteEvent)e;
-			jce.getChannel().say("Hei");
+			message = "\nYou've joined " + jce.getChannel().getName();
+			if(jce.getChannel().getTopic() != ""){
+				message = message + "\nThe topic is " + jce.getChannel().getTopic();
+			}
+			chatWindow.setChannel(jce.getChannel());
+			chatWindow.recieveMessage(message);
 		}
 		else if(e.getType() == Type.MOTD)
 		{
