@@ -55,7 +55,7 @@ public class ConnectionList extends JPanel{
 	public void addChannelNode(String serverName, String channelName){
 		int index = 0;
 		for(int i = 0; i<conManager.getSessions().size(); i++){
-			if(conManager.getSessions().get(i).getConnectedHostName() == serverName) index = conManager.getSessions().size()-i;
+			if(conManager.getSessions().get(i).getConnectedHostName() == serverName) index = (conManager.getSessions().size()-1)-i;
 		}
 		serverNodes.get(index).add(new DefaultMutableTreeNode(channelName));
 		conTree.updateUI();
