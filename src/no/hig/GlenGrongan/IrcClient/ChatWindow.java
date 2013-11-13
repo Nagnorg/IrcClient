@@ -3,8 +3,10 @@ package no.hig.GlenGrongan.IrcClient;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -19,10 +21,11 @@ import jerklib.Session;
 
 /**
  * Class containing and managing all chat functionality
+ * @version 0.2
  * @author Glen
  *
  */
-public class ChatWindow extends JPanel{
+public class ChatWindow extends JFrame{
 	JTextPane inText;
 	JTextField outText;
 	JButton sendButton;
@@ -30,19 +33,36 @@ public class ChatWindow extends JPanel{
 	Session session;
 	Channel channel;
 	
-	public ChatWindow(){
+	public ChatWindow(Session s, Channel c){
+		super(s.getConnectedHostName() + ":" + c.getName());
 		setLayout(new BorderLayout());
 		add (textScrollPane = new JScrollPane (inText = new JTextPane()), BorderLayout.CENTER);
 		inText.setEditable(false);
 		add(createOutTextPanel(), BorderLayout.SOUTH);
+		session = s;		// Sets the session of this window.
+		channel = c;		// Sets the channel of this window.
+		setVisible(true);
+		setSize(500,300);
+		
+		// Part channel when window is closed.
+		addWindowListener(new java.awt.event.WindowAdapter() {
+	        public void windowClosing(WindowEvent winEvt) {
+	        	channel.part("Bye");
+	        }
+	    });
 	}
 	
+	/**
+	 * Create layout for textfield and send button.
+	 * @return the layout for the textField and send button
+	 */
 	private JPanel createOutTextPanel(){
 		JPanel layout = new JPanel();
 		layout.setLayout(new BorderLayout());
 		layout.add(outText = new JTextField(), BorderLayout.CENTER);
 		layout.add(sendButton = new JButton("Send"), BorderLayout.EAST);
 		sendButton.addActionListener(new sendEvent());
+		outText.addActionListener(new sendEvent());
 		
 		return layout;
 	}
@@ -93,23 +113,41 @@ public class ChatWindow extends JPanel{
 	}
 	
 	public void setSession(Session s){
-		session = s;
+		this.session = s;
 	}
 	
 	public void setChannel(Channel c){
-		channel = c;
+		this.channel = c;
 	}
+	/**
+	 * @return the channel
+	 */
+	public Channel getChannel() {
+		return channel;
+	}
+	
+	/**
+	 * Sends what entered in the textfield to the server. If the text begins with "/", it will fire of a command.
+	 * @author Glen
+	 *
+	 */
 	class sendEvent implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String message = outText.getText();
 			if(message.startsWith("/")){
-				
+				String[] command = message.split(" ");
+				switch(command[0]){
+				case "/join" : session.join(command[1]); break;
+				case "/part": channel.part(command[1]); break;
+				default : recieveMessage("Unknown command"); break;
+				}
 			}
 			else{
 				channel.say(outText.getText());
 			}
+			outText.setText("");
 		
 		}
 	}

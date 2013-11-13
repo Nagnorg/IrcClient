@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,9 +14,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
+import jerklib.Channel;
 import jerklib.ConnectionManager;
 import jerklib.Profile;
+import jerklib.Session;
 /**
  * Class containing creation of GUI and most of its handling for the IRC client.
  * @version 0.2
@@ -25,15 +30,17 @@ import jerklib.Profile;
 public class IrcClientWorkspace extends JFrame{
 	JPanel serverListPanel;
 	ChatWindow chatWindow;
+	ConnectionList connectionList;
 	ConnectOptions cOptions;
 	ConnectionManager conManager;
+
 	public IrcClientWorkspace(){
+		super("g&mIRC");
 		setLayout(new BorderLayout());
-		add(serverListPanel = new JPanel(), BorderLayout.WEST);
-		serverListPanel.setLayout(new BorderLayout());
-		serverListPanel.add(new JLabel("IRC servers"), BorderLayout.NORTH);
+		add(connectionList = new ConnectionList(conManager), BorderLayout.WEST);
+
 		
-		add(chatWindow = new ChatWindow(), BorderLayout.CENTER);
+		//add(chatWindow = new ChatWindow(), BorderLayout.CENTER);
 		
 
 		
@@ -41,9 +48,14 @@ public class IrcClientWorkspace extends JFrame{
 		add(workspaceToolbar, BorderLayout.NORTH);
 		workspaceToolbar.setVisible(true);
 		
+
+		addWindowListener(new java.awt.event.WindowAdapter() {
+	        public void windowClosing(WindowEvent winEvt) {
+	        	if(conManager != null) conManager.quit();
+	     } });
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-	
+
 	private JToolBar createToolbar(){
 		JButton newConnection = new JButton("New Connection");
 		JButton removeConnection = new JButton ("Remove Connection");
@@ -83,8 +95,8 @@ public class IrcClientWorkspace extends JFrame{
 			{
 				conManager = new ConnectionManager(new Profile(cOptions.getInsertNick().getText(), cOptions.getInsertAlternative().getText()));
 			}
-			ConnectionSetup newConnection = new ConnectionSetup(((String)cOptions.getNetworkChosen().getSelectedItem()), conManager, chatWindow);
-			
+			ConnectionSetup newConnection = new ConnectionSetup(((String)cOptions.getNetworkChosen().getSelectedItem()), conManager, connectionList, chatWindow);
+			connectionList.setConManager(conManager);
 		}
 		
 	}
