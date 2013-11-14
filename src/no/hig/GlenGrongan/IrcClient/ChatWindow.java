@@ -21,12 +21,12 @@ import jerklib.Session;
 
 /**
  * Class containing and managing all chat functionality
- * @version 0.2
+ * @version 0.3
  * @author Glen
  *
  */
 public class ChatWindow extends JFrame{
-	JTextPane inText;
+	RecieveTextPanel inText;
 	JTextField outText;
 	JButton sendButton;
 	JScrollPane textScrollPane;
@@ -36,8 +36,7 @@ public class ChatWindow extends JFrame{
 	public ChatWindow(Session s, Channel c){
 		super(s.getConnectedHostName() + ":" + c.getName());
 		setLayout(new BorderLayout());
-		add (textScrollPane = new JScrollPane (inText = new JTextPane()), BorderLayout.CENTER);
-		inText.setEditable(false);
+		add (inText = new RecieveTextPanel(), BorderLayout.CENTER);
 		add(createOutTextPanel(), BorderLayout.SOUTH);
 		session = s;		// Sets the session of this window.
 		channel = c;		// Sets the channel of this window.
@@ -66,35 +65,12 @@ public class ChatWindow extends JFrame{
 		
 		return layout;
 	}
-
-	/**
-	 * Write messages in the textpane
-	 * @param message to be written in textpane
-	 */
-	public void recieveMessage(String message){
-		int pos = inText.getStyledDocument().getEndPosition().getOffset();
-		SimpleAttributeSet sas = new SimpleAttributeSet ();
-		try {
-			// add the text to the document
-			inText.getStyledDocument().insertString(pos, message, sas);
-		} catch (BadLocationException ble) {
-			ble.printStackTrace();
-		}
-	    SwingUtilities.invokeLater (new Thread() {
-	        public void run () {
-	        	// Get the scrollbar from the scroll pane
-	        	JScrollBar scrollbar = textScrollPane.getVerticalScrollBar ();
-	        	// Set the scrollbar to its maximum value
-	        	scrollbar.setValue (scrollbar.getMaximum());
-	        }
-	    });
-	}
 	
 	
 	/**
 	 * @return the textpane
 	 */
-	public JTextPane getInText() {
+	public RecieveTextPanel getInText() {
 		return inText;
 	}
 
@@ -141,11 +117,13 @@ public class ChatWindow extends JFrame{
 				switch(command[0]){
 				case "/join" : session.join(command[1]); break;
 				case "/part": channel.part(command[1]); break;
-				default : recieveMessage("Unknown command"); break;
+				default : inText.recieveMessage("Unknown command"); break;
 				}
 			}
 			else{
 				channel.say(outText.getText());
+				System.out.println(outText.getText());
+				System.out.println(channel.getName());
 			}
 			outText.setText("");
 		

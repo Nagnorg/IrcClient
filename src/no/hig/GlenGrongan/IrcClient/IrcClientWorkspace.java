@@ -33,14 +33,12 @@ public class IrcClientWorkspace extends JFrame{
 	ConnectionList connectionList;
 	ConnectOptions cOptions;
 	ConnectionManager conManager;
+	ServerInformation informationPanel;
 
 	public IrcClientWorkspace(){
 		super("g&mIRC");
 		setLayout(new BorderLayout());
-		add(connectionList = new ConnectionList(conManager), BorderLayout.WEST);
-
-		
-		//add(chatWindow = new ChatWindow(), BorderLayout.CENTER);
+		add(connectionList = new ConnectionList(conManager), BorderLayout.CENTER);
 		
 
 		
@@ -95,7 +93,7 @@ public class IrcClientWorkspace extends JFrame{
 			{
 				conManager = new ConnectionManager(new Profile(cOptions.getInsertNick().getText(), cOptions.getInsertAlternative().getText()));
 			}
-			ConnectionSetup newConnection = new ConnectionSetup(((String)cOptions.getNetworkChosen().getSelectedItem()), conManager, connectionList, chatWindow);
+			ConnectionSetup newConnection = new ConnectionSetup(((String)cOptions.getNetworkChosen().getSelectedItem()), conManager, connectionList);
 			connectionList.setConManager(conManager);
 		}
 		

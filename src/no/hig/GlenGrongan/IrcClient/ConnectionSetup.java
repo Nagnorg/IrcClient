@@ -13,6 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import jerklib.ConnectionManager;
 import jerklib.Profile;
 import jerklib.Session;
+import jerklib.events.ChannelListEvent;
 import jerklib.events.ConnectionCompleteEvent;
 import jerklib.events.IRCEvent;
 import jerklib.events.JoinCompleteEvent;
@@ -33,13 +34,16 @@ public class ConnectionSetup implements IRCEventListener{
 	Session session;
 	List<ChatWindow> chatWindow = new ArrayList<ChatWindow>();
 	ConnectionList connectionList;
-	String motd;
-	public ConnectionSetup(String server, ConnectionManager conMan,ConnectionList list, ChatWindow chat)
+	ServerInformation information;
+	public ConnectionSetup(String server, ConnectionManager conMan,ConnectionList list)
 	{
 		//chatWindow = chat;
 		connectionList = list;
 		ConnectionManager conManager = conMan;
 		session = conManager.requestConnection(server);
+		information = new ServerInformation();
+		information.setSession(session);
+		information.updateList();
 		session.addIRCEventListener(this);
 	}
  
@@ -49,44 +53,49 @@ public class ConnectionSetup implements IRCEventListener{
 		if(e.getType() == Type.CONNECT_COMPLETE)
 		{
 			ConnectionCompleteEvent cce = (ConnectionCompleteEvent)e;
-			connectionList.addServerNode(cce.getActualHostName());
-			e.getSession().join("#jerklib");
+			connectionList.addServerNode(cce.getActualHostName(), information);
+			session.join("#jerklib");
+			session.chanList();
+			//information.updateList();
  
+		}
+		else if(e.getType() == Type.CHANNEL_LIST_EVENT){
+			ChannelListEvent cle = (ChannelListEvent)e;
+			if(cle.getNumberOfUser()>5) information.getChannelListModel().addElement(cle.getChannelName());
 		}
 		else if(e.getType() == Type.JOIN_COMPLETE)
 		{
 			JoinCompleteEvent jce = (JoinCompleteEvent)e;
 			chatWindow.add(new ChatWindow(session, jce.getChannel()));
-			connectionList.addChannelNode(session.getConnectedHostName(), jce.getChannel().getName());
+			connectionList.addChannelNode(session.getConnectedHostName(), jce.getChannel().getName(),chatWindow.get((session.getChannels().size())-1));
 			message = "\nYou've joined " + jce.getChannel().getName();
+			information.getServerText().recieveMessage(message);
 			if(jce.getChannel().getTopic() != ""){
 				message = message + "\nThe topic is " + jce.getChannel().getTopic();
 			}
-			chatWindow.get((session.getChannels().size())-1).recieveMessage(motd);
-			chatWindow.get((session.getChannels().size())-1).recieveMessage(message);
+			chatWindow.get((session.getChannels().size())-1).getInText().recieveMessage(message);
 		}
 		else if(e.getType() == Type.MOTD)
 		{
 			MotdEvent me = (MotdEvent) e;
 			message = me.getMotdLine();
 			if(message.startsWith("-")){message = message + "\n";}
-			motd = motd + message;
+			information.getServerText().recieveMessage(message);
 		}
-		/*else if(e.getType() == Type.NOTICE){
+		else if(e.getType() == Type.NOTICE){
 			NoticeEvent ne = (NoticeEvent) e;
 			message = ne.getNoticeMessage();
-			chatWindow.get(findIndex(ne.getChannel().getName())).recieveMessage(message);
-		}*/
+			if(ne.getChannel() != null) chatWindow.get(findIndex(ne.getChannel().getName())).getInText().recieveMessage(message);
+			else information.getServerText().recieveMessage(message);
+		}
 		else if(e.getType()== Type.CHANNEL_MESSAGE)
 		{
 			MessageEvent me = (MessageEvent) e;
-			message = "\n" + me.getNick() + ":" + me.getMessage();
-			chatWindow.get(findIndex(me.getChannel().getName())).recieveMessage(message);
+			message = "\n" + me.getNick() + ": " + me.getMessage();
+			chatWindow.get(findIndex(me.getChannel().getName())).getInText().recieveMessage(message);
 		}
-		else
-		{
-			System.out.println(e.getType() + " : " + e.getRawEventData());
-		}
+			
+		System.out.println(e.getType() + " : " + e.getRawEventData());
 	}
 	/**
 	 * Finds the index of the chatWindow for a named channel.
