@@ -66,7 +66,7 @@ public class ConnectionList extends JPanel{
 		        Object nodeInfo = node.getUserObject();
 		        if(node.getLevel() == 2){
 		        	for(ChatWindow instance : knownChatWindows){
-		        		if(instance.getChannel().getName() == (String) nodeInfo){
+		        		if(((ChannelChat)instance).getChannel().getName() == (String) nodeInfo){
 		        			instance.toFront();
 		        			instance.setState(instance.NORMAL);
 		        		}
