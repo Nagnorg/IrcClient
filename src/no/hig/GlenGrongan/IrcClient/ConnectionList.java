@@ -27,12 +27,14 @@ import jerklib.Session;
  *
  */
 public class ConnectionList extends JPanel{
-	DefaultMutableTreeNode top;
-	JTree conTree;
+	DefaultMutableTreeNode top; // Rootnode for the connectionlist tree
+	JTree conTree; // connectionlist tree.
 	ConnectionManager conManager;
-	ServerInformation informationPanel;
+	
 	JPanel mainPanel;
+	ServerInformation informationPanel; 
 	JPanel treePanel;
+	
 	List<DefaultMutableTreeNode> serverNodes = new ArrayList<DefaultMutableTreeNode>();
 	List<DefaultMutableTreeNode> channelNodes = new ArrayList<DefaultMutableTreeNode>();
 	List<ServerInformation> knownServerInformation = new ArrayList<ServerInformation>();
@@ -50,10 +52,10 @@ public class ConnectionList extends JPanel{
 	private JPanel createListPanel() {
 		JPanel layout = new JPanel();
 		top = new DefaultMutableTreeNode("IRC servers");
-		//if(conManager != null) top.add(createNodes());
 		conTree = new JTree(top);
 		conTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		
+		// Adds a listener for when a node is selected.
 		conTree.addTreeSelectionListener(new TreeSelectionListener(){
 
 			@Override
@@ -69,18 +71,26 @@ public class ConnectionList extends JPanel{
 		        			instance.setState(instance.NORMAL);
 		        		}
 		        	}
-		        	for(ServerInformation instance : knownServerInformation){
-		        		if(instance.getSession().getConnectedHostName() == (String)((DefaultMutableTreeNode) node.getParent()).getUserObject()){
-		        			if(instance != informationPanel){
-		        				mainPanel.remove(informationPanel);
-		        				informationPanel = instance;
-		    		        	mainPanel.add(informationPanel, BorderLayout.CENTER);
-		    		        	informationPanel.updateUI();
-		        			}
-		        		}
-		        	}
-		        	
+		        	changeInformationPanel((String)((DefaultMutableTreeNode) node.getParent()).getUserObject());
+
 		        }
+		        else if(node.getLevel() == 1){
+		        	changeInformationPanel((String) nodeInfo);
+		        }
+				
+			}
+
+			private void changeInformationPanel(String nodeString) {
+	        	for(ServerInformation instance : knownServerInformation){
+	        		if(instance.getSession().getConnectedHostName() == nodeString){
+	        			if(instance != informationPanel){
+	        				mainPanel.remove(informationPanel);
+	        				informationPanel = instance;
+	    		        	mainPanel.add(informationPanel, BorderLayout.CENTER);
+	    		        	informationPanel.updateUI();
+	        			}
+	        		}
+	        	}
 				
 			}
 			

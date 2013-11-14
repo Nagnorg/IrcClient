@@ -24,26 +24,29 @@ import jerklib.events.NoticeEvent;
 import jerklib.listeners.IRCEventListener;
 
 /**
- * Class containing a session, and controlls the connection to one server.
+ * Class containing a session, and controls the connection to one server.
  * @version 0.2
  * @author Glen
+ * 
  *
  */
 
 public class ConnectionSetup implements IRCEventListener{
-	Session session;
-	List<ChatWindow> chatWindow = new ArrayList<ChatWindow>();
-	ConnectionList connectionList;
+	Session session;// Easy access session for this listener.
+	List<ChatWindow> chatWindow = new ArrayList<ChatWindow>();// List with chatwindows, one for each channel part of session
+	ConnectionList connectionList;			
 	ServerInformation information;
 	public ConnectionSetup(String server, ConnectionManager conMan,ConnectionList list)
 	{
-		//chatWindow = chat;
 		connectionList = list;
 		ConnectionManager conManager = conMan;
+		//Creates a new session.
 		session = conManager.requestConnection(server);
+		//Creates a panel for information specific for this session.
 		information = new ServerInformation();
 		information.setSession(session);
 		information.updateList();
+		//Adds the listener to the session
 		session.addIRCEventListener(this);
 	}
  
@@ -56,7 +59,6 @@ public class ConnectionSetup implements IRCEventListener{
 			connectionList.addServerNode(cce.getActualHostName(), information);
 			session.join("#jerklib");
 			session.chanList();
-			//information.updateList();
  
 		}
 		else if(e.getType() == Type.CHANNEL_LIST_EVENT){
