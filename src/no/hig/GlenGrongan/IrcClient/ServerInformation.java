@@ -2,6 +2,7 @@ package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -43,6 +44,7 @@ class ServerInformation extends JPanel{
 	private JPanel createChannelListPanel() {
 		JPanel layout = new JPanel();
 		layout.setLayout(new BorderLayout());
+		layout.setMaximumSize(new Dimension(10, 20));
 		channelList = new JList();
 		channelListModel = new DefaultListModel();
 		channelList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -50,7 +52,7 @@ class ServerInformation extends JPanel{
 		
 		JPanel searchPanel = new JPanel();
 		searchPanel.setLayout(new BorderLayout());
-		searchPanel.add(channelSearch = new JTextField(10), BorderLayout.CENTER);
+		searchPanel.add(channelSearch = new JTextField("", 10), BorderLayout.CENTER);
 		searchPanel.add(channelSearchButton = new JButton("Search"), BorderLayout.EAST);
 		channelSearchButton.addActionListener(new searchForChannel());
 		channelSearch.addActionListener(new searchForChannel());
@@ -86,7 +88,11 @@ class ServerInformation extends JPanel{
 	class searchForChannel implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e){
-			channelList.setSelectedValue(channelSearch.getText(), true);
+			if(session != null){
+				channelListModel.removeAllElements();
+				if(channelSearch.getText().length() > 3) session.chanList();
+				serverText.recieveMessage("\nSearching for channels");
+			}
 		}
 	}
 	/**

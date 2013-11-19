@@ -93,7 +93,7 @@ public class IrcClientWorkspace extends JFrame{
 			{
 				conManager = new ConnectionManager(new Profile(cOptions.getInsertNick().getText(), cOptions.getInsertAlternative().getText()));
 			}
-			ConnectionSetup newConnection = new ConnectionSetup(((String)cOptions.getNetworkChosen().getSelectedItem()), conManager, connectionList);
+			new ConnectionSetup(((String)cOptions.getNetworkChosen().getSelectedItem()), conManager, connectionList);
 			connectionList.setConManager(conManager);
 		}
 		

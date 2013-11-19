@@ -8,27 +8,22 @@ import jerklib.Channel;
 import jerklib.Session;
 
 public class ChannelChat extends ChatWindow{
-	Session session;
 	Channel channel;
+	ChannelUsers userList;
 	public ChannelChat(String s1, String s2) {
 		super(s1, s2);
-		// TODO Auto-generated constructor stub
+		// Should never run.
 	}
-	public ChannelChat(Session s, Channel c){
-		super(s.getConnectedHostName(), c.getName());
+	public ChannelChat(Channel c){
+		super(c.getSession().getConnectedHostName(), c.getName());
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());
 		outTextPanel.add(new ChannelUsers(), BorderLayout.EAST);
 		
-		session = s;
 		channel = c;
 		setVisible(true);
 		setSize(500,300);
 		
-	}
-	
-	public void setSession(Session s){
-		this.session = s;
 	}
 	
 	public void setChannel(Channel c){
@@ -46,21 +41,25 @@ public class ChannelChat extends ChatWindow{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String message = inText.getText();
-			if(message.startsWith("/")){
-				String[] command = message.split(" ");
-				switch(command[0]){
-				case "/join" : session.join(command[1]); break;
-				case "/part": channel.part(command[1]); break;
-				default : outText.recieveMessage("Unknown command"); break;
+			if(message.length() <= 512 && message.length() > 3){
+				if(message.startsWith("/")){
+					String[] command = message.split(" ");
+					switch(command[0]){
+						case "/join" : channel.getSession().join(command[1]); break;
+						case "/part": channel.part(command[1]); break;
+						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway();
+						case "/me": 
+						case "/action": channel.getSession().action(channel.getName(), command[1]); break;
+						default : outText.recieveMessage("Unknown command"); break;
+					}
 				}
+				else{
+					channel.say(message);
+					/*System.out.println(message);
+					System.out.println(channel.getName());*/
+				}
+				inText.setText("");
 			}
-			else{
-				channel.say(inText.getText());
-				System.out.println(inText.getText());
-				System.out.println(channel.getName());
-			}
-			inText.setText("");
-		
 		}
 	}
 

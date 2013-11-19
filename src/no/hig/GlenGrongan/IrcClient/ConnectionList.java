@@ -15,6 +15,7 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import jerklib.Channel;
@@ -67,8 +68,11 @@ public class ConnectionList extends JPanel{
 		        if(node.getLevel() == 2){
 		        	for(ChatWindow instance : knownChatWindows){
 		        		if(((ChannelChat)instance).getChannel().getName() == (String) nodeInfo){
-		        			instance.toFront();
-		        			instance.setState(instance.NORMAL);
+		        			if(instance.getState() == instance.ICONIFIED){
+		        				instance.toFront();
+		        				instance.setState(instance.NORMAL);
+		        			}
+		        			else instance.setState(instance.ICONIFIED);
 		        		}
 		        	}
 		        	changeInformationPanel((String)((DefaultMutableTreeNode) node.getParent()).getUserObject());
@@ -77,7 +81,7 @@ public class ConnectionList extends JPanel{
 		        else if(node.getLevel() == 1){
 		        	changeInformationPanel((String) nodeInfo);
 		        }
-				
+				conTree.clearSelection();
 			}
 
 			private void changeInformationPanel(String nodeString) {
