@@ -43,13 +43,14 @@ public class ChannelChat extends ChatWindow{
 			String message = inText.getText();
 			if(message.length() <= 512 && message.length() > 3){
 				if(message.startsWith("/")){
-					String[] command = message.split(" ");
-					switch(command[0]){
+					String[] command = message.split(" ", 2);
+					switch(command[0].toLowerCase()){
 						case "/join" : channel.getSession().join(command[1]); break;
 						case "/part": channel.part(command[1]); break;
-						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway();
+						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway(); break;
 						case "/me": 
-						case "/action": channel.getSession().action(channel.getName(), command[1]); break;
+						case "/action": channel.action(command[1]); break;
+						case "/changenick": channel.getSession().changeNick(command[1]); break;
 						default : outText.recieveMessage("Unknown command"); break;
 					}
 				}
