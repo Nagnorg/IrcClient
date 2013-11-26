@@ -21,8 +21,8 @@ public class ChannelChat extends ChatWindow{
 		outTextPanel.add(new ChannelUsers(), BorderLayout.EAST);
 		
 		channel = c;
-		setVisible(true);
 		setSize(500,300);
+		setVisible(true);
 		
 	}
 	
@@ -71,6 +71,34 @@ public class ChannelChat extends ChatWindow{
 	public void setUserList(ChannelUsers userList) {
 		this.userList = userList;
 	}
+	
+	// Nicklist commands
+	
+	public void ban(String nick, String type) {
+		// TODO: Add content
+	}
+	
+	public void ctcp() {
+		// TODO: Add content, check parameters
+	}
+	
+	public void invite(String nick, Channel channel) {
+		// TODO: Add content, check resolution
+	}
+	
+	public void kick(String nick) {
+		// TODO: Add content
+	}
+	
+	public void query(String nick, String message) {
+		// TODO: Add content, parameter evaluation
+	}
+	
+	public void who(String nick) {
+		// TODO: Add content
+	}
+	
+	
 	
 	public void systemOutput() {
 		for(User user : userList.getUsers()) {
