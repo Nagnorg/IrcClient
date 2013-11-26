@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -28,28 +29,31 @@ public class EventCustomizer extends JFrame{
 	JPanel fontPanel;
 	JComboBox fontOptions;
 	JSpinner fontSize;
-	JPanel colorPanel;
 	JCheckBox bold;
 	JCheckBox italic;
+	JPanel colorPanel;
+	JButton backGround;
+	JButton foreGround;
 	
 	public EventCustomizer() {
+		super("Event Customizer");
 		setLayout(new BorderLayout());
 		add(listPanel = createListPanel(), BorderLayout.CENTER);
-		add(createTextPanel(), BorderLayout.NORTH);
+		add(createTextPanel(), BorderLayout.SOUTH);
 	}
 	
 	private JPanel createListPanel(){
 		JPanel layout = new JPanel();
 		layout.setLayout(new BorderLayout());
-		eventList = new JList();
 		eventListModel = new DefaultListModel();
-		eventList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		eventList.setLayoutOrientation(JList.VERTICAL_WRAP);
 		String[] eventTypes = 
 	{"Away", "ConnectionComplete", "ConnectionLost", "Error", "Invite", "Join", "Kick", "NickChange", "Notice", "Mode", "Motd", "Message", "Part", "Quit", "ServerInformation", "ServerVersion", "Topic", "Whi", "Whois", "WhoWas"};
-		for(String event : eventTypes) eventListModel.addElement(event);
+		for(String event : eventTypes){ eventListModel.addElement(event);}
+		eventList = new JList(eventListModel);
+		eventList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		eventList.setLayoutOrientation(JList.VERTICAL_WRAP);
 		
-		layout.add(eventListScroller = new JScrollPane(eventList));
+		layout.add(eventListScroller = new JScrollPane(eventList), BorderLayout.CENTER);
 		return layout;
 	}
 	
@@ -74,8 +78,8 @@ public class EventCustomizer extends JFrame{
 		JLabel tempLabel;
 		
 		gbc.gridx = 1; gbc.gridy = 1;
-		gbc.gridwidth = 2; gbc.gridheight = 1;
-		gbc.anchor = java.awt.GridBagConstraints.CENTER;
+		gbc.gridwidth = 1; gbc.gridheight = 1;
+		gbc.anchor = java.awt.GridBagConstraints.EAST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
 		l.setConstraints(tempLabel = new JLabel("Font"), gbc);
 		fontPanel.add(tempLabel);
@@ -84,9 +88,9 @@ public class EventCustomizer extends JFrame{
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		String[] fonts = ge.getAvailableFontFamilyNames();
 		fontOptions = new JComboBox(fonts);
-		gbc.gridx = 3; gbc.gridy = 1;
+		gbc.gridx = 2; gbc.gridy = 1;
 		gbc.gridwidth = 3; gbc.gridheight = 1;
-		gbc.anchor = java.awt.GridBagConstraints.CENTER;
+		gbc.anchor = java.awt.GridBagConstraints.EAST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
 		l.setConstraints(fontOptions, gbc);
 		fontPanel.add(fontOptions);
@@ -94,7 +98,7 @@ public class EventCustomizer extends JFrame{
 		bold = new JCheckBox("bold");
 		gbc.gridx = 1; gbc.gridy = 2;
 		gbc.gridwidth = 1; gbc.gridheight = 1;
-		gbc.anchor = java.awt.GridBagConstraints.CENTER;
+		gbc.anchor = java.awt.GridBagConstraints.WEST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
 		l.setConstraints(bold, gbc);
 		fontPanel.add(bold);
@@ -102,27 +106,29 @@ public class EventCustomizer extends JFrame{
 		italic = new JCheckBox("italic");
 		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.gridwidth = 1; gbc.gridheight = 1;
-		gbc.anchor = java.awt.GridBagConstraints.CENTER;
+		gbc.anchor = java.awt.GridBagConstraints.WEST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
 		l.setConstraints(italic, gbc);
-		fontPanel.add(tempLabel);
+		fontPanel.add(italic);
 		
-		gbc.gridx = 4; gbc.gridy = 2;
+		gbc.gridx = 3; gbc.gridy = 2;
 		gbc.gridwidth = 1; gbc.gridheight = 2;
-		gbc.anchor = java.awt.GridBagConstraints.CENTER;
+		gbc.anchor = java.awt.GridBagConstraints.EAST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
 		l.setConstraints(tempLabel = new JLabel("Font size"), gbc);
 		fontPanel.add(tempLabel);
 		
 		fontSize = new JSpinner();
-		gbc.gridx = 5; gbc.gridy = 2;
+		gbc.gridx = 4; gbc.gridy = 2;
 		gbc.gridwidth = 1; gbc.gridheight = 2;
-		gbc.anchor = java.awt.GridBagConstraints.CENTER;
+		gbc.anchor = java.awt.GridBagConstraints.EAST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
 		l.setConstraints(fontSize, gbc);
 		fontPanel.add(fontSize);
 		
 		colorPanel = new JPanel();
+		
+		
 		
 		layout.add(fontPanel);
 		layout.add(colorPanel);

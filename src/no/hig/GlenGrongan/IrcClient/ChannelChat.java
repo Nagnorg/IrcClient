@@ -18,7 +18,7 @@ public class ChannelChat extends ChatWindow{
 		super(c.getSession().getConnectedHostName(), c.getName());
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());
-		outTextPanel.add(new ChannelUsers(), BorderLayout.EAST);
+		outTextPanel.add(userList = new ChannelUsers(), BorderLayout.EAST);
 		
 		channel = c;
 		setVisible(true);
@@ -69,7 +69,10 @@ public class ChannelChat extends ChatWindow{
 	}
 	
 	public void setUserList(ChannelUsers userList) {
+		//outTextPanel.remove(userList);
 		this.userList = userList;
+		outTextPanel.add(userList, BorderLayout.EAST);
+		outTextPanel.updateUI();
 	}
 	
 	public void systemOutput() {
