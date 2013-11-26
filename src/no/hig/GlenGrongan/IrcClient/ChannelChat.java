@@ -21,8 +21,8 @@ public class ChannelChat extends ChatWindow{
 		outTextPanel.add(userList = new ChannelUsers(), BorderLayout.EAST);
 		
 		channel = c;
-		setSize(500,300);
 		setVisible(true);
+		setSize(500,300);
 		
 	}
 	

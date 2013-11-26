@@ -59,6 +59,16 @@ public class ChannelUsers extends JPanel {
 	public void addUser(User user) {
 		users.add(user);
 		Collections.sort(users);
+		userListModel.add(users.indexOf(user), user.getName());
+	}
+	
+	public void removeUser(String nick) {
+		int index = getUserPosition(nick);
+		if(index != -1) {
+			
+			users.remove(index);
+			userListModel.remove(index);
+		}
 	}
 	
 	public void renameUser(String oldnick, String newnick) {
