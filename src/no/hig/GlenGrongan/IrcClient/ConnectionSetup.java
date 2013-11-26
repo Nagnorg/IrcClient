@@ -22,6 +22,7 @@ import jerklib.events.JoinCompleteEvent;
 import jerklib.events.IRCEvent.Type;
 import jerklib.events.MessageEvent;
 import jerklib.events.MotdEvent;
+import jerklib.events.NickChangeEvent;
 import jerklib.events.NoticeEvent;
 import jerklib.listeners.IRCEventListener;
 
@@ -91,7 +92,17 @@ public class ConnectionSetup implements IRCEventListener{
 			if(jce.getChannel().getTopic() != ""){
 				message = message + "\nThe topic is " + jce.getChannel().getTopic();
 			}
-			chatWindow.get((session.getChannels().size())-1).getOutText().recieveMessage(message);
+			
+			ChannelChat ccObject = chatWindow.get((session.getChannels().size())-1);
+			ccObject.getOutText().recieveMessage(message);
+			
+			List<User> nicks = new ArrayList<User>();
+			for(String  nick : ccObject.getChannel().getNicks()) {
+				nicks.add(new User(nick, ccObject.getChannel()));
+			}
+			
+			ccObject.setUserList(new ChannelUsers(nicks));
+			ccObject.systemOutput();
 		}
 		else if(e.getType() == Type.MOTD)
 		{
@@ -119,7 +130,26 @@ public class ConnectionSetup implements IRCEventListener{
 			message = "\n*" + ctcpe.getNick() + action + "*";
 			chatWindow.get(findIndex(ctcpe.getChannel().getName())).getOutText().recieveMessage(message);
 		}
+		
+		// User Related
+		else if(e.getType() == Type.JOIN) {
+			System.out.println("User joined: " +e.getRawEventData());
+		}
+		
+		else if(e.getType() == Type.QUIT) {
+			System.out.println("User quit: " +e.getRawEventData());
+		}
+		
+		else if(e.getType() == Type.NICK_CHANGE) {
+			NickChangeEvent nce = (NickChangeEvent) e;
+			String oldnick = nce.getOldNick();
+			String newnick = nce.getNewNick();
 			
+			chatWindow.get((session.getChannels().size())-1).getUserList().renameUser(oldnick, newnick);
+			
+			System.out.println("User changed name: " +e.getRawEventData());
+		}
+		
 		System.out.println(e.getType() + " : " + e.getRawEventData());
 	}
 	/**

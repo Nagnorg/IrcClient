@@ -18,7 +18,7 @@ public class ChannelChat extends ChatWindow{
 		super(c.getSession().getConnectedHostName(), c.getName());
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());
-		outTextPanel.add(new ChannelUsers(), BorderLayout.EAST);
+		outTextPanel.add(userList = new ChannelUsers(), BorderLayout.EAST);
 		
 		channel = c;
 		setVisible(true);
@@ -36,6 +36,14 @@ public class ChannelChat extends ChatWindow{
 		return channel;
 	}
 	
+	public ChannelUsers getUserList() {
+		return userList;
+	}
+	
+	public void setUserList(ChannelUsers userList) {
+		this.userList = userList;
+	}
+	
 	class sendEvent implements ActionListener{
 
 		@Override
@@ -50,7 +58,8 @@ public class ChannelChat extends ChatWindow{
 						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway();
 						case "/me": 
 						case "/action": channel.getSession().action(channel.getName(), command[1]); break;
-						default : outText.recieveMessage("Unknown command"); break;
+						case "/nick": channel.getSession().changeNick(command[1]);
+						default : outText.recieveMessage("\nUnknown command"); break;
 					}
 				}
 				else{
@@ -60,6 +69,16 @@ public class ChannelChat extends ChatWindow{
 				}
 				inText.setText("");
 			}
+		}
+	}
+	
+	public void systemOutput() {
+		for(User user : userList.getUsers()) {
+			System.out.println("--------");
+			System.out.println("Nick: " +user.getName());
+			if(user.getPrivilege()) System.out.println("Ops : Yes");
+			else System.out.println("Ops : No");
+			System.out.println("--------");
 		}
 	}
 
