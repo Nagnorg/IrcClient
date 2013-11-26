@@ -18,7 +18,7 @@ public class ChannelChat extends ChatWindow{
 		super(c.getSession().getConnectedHostName(), c.getName());
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());
-		outTextPanel.add(userList = new ChannelUsers(), BorderLayout.EAST);
+		outTextPanel.add(new ChannelUsers(), BorderLayout.EAST);
 		
 		channel = c;
 		setVisible(true);
@@ -36,14 +36,6 @@ public class ChannelChat extends ChatWindow{
 		return channel;
 	}
 	
-	public ChannelUsers getUserList() {
-		return userList;
-	}
-	
-	public void setUserList(ChannelUsers userList) {
-		this.userList = userList;
-	}
-	
 	class sendEvent implements ActionListener{
 
 		@Override
@@ -51,15 +43,15 @@ public class ChannelChat extends ChatWindow{
 			String message = inText.getText();
 			if(message.length() <= 512 && message.length() > 3){
 				if(message.startsWith("/")){
-					String[] command = message.split(" ");
-					switch(command[0]){
+					String[] command = message.split(" ", 2);
+					switch(command[0].toLowerCase()){
 						case "/join" : channel.getSession().join(command[1]); break;
 						case "/part": channel.part(command[1]); break;
-						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway();
+						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway(); break;
 						case "/me": 
-						case "/action": channel.getSession().action(channel.getName(), command[1]); break;
-						case "/nick": channel.getSession().changeNick(command[1]);
-						default : outText.recieveMessage("\nUnknown command"); break;
+						case "/action": channel.action(command[1]); break;
+						case "/changenick": channel.getSession().changeNick(command[1]); break;
+						default : outText.recieveMessage("Unknown command"); break;
 					}
 				}
 				else{
@@ -70,6 +62,14 @@ public class ChannelChat extends ChatWindow{
 				inText.setText("");
 			}
 		}
+	}
+
+	public ChannelUsers getUserList() {
+		return userList;
+	}
+	
+	public void setUserList(ChannelUsers userList) {
+		this.userList = userList;
 	}
 	
 	public void systemOutput() {
