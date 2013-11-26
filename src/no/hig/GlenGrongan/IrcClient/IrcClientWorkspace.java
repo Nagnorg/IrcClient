@@ -74,35 +74,43 @@ public class IrcClientWorkspace extends JFrame{
 	private JToolBar createToolbar(){
 		JButton newConnection = new JButton("New Connection");
 		JButton removeConnection = new JButton ("Remove Connection");
-		JButton newChatWindow = new JButton("Customize");
+		JButton customWindow = new JButton("Customize");
 		
 		JToolBar toolbar = new JToolBar();
 		toolbar.add(newConnection);
 		toolbar.add(removeConnection);
-		toolbar.add(newChatWindow);
+		toolbar.add(customWindow);
 		
 		newConnection.addActionListener(new NewConnection());
-		
+		customWindow.addActionListener(new Customize());
 		return toolbar;
 		
 	}
 	
 	private void createMenu(){}
 
+	class Customize implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			EventCustomizer customizer = new EventCustomizer();	
+			customizer.pack();
+			customizer.setVisible(true);
+		}
+		
+	}
 	class NewConnection implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JFrame connectionWindow = new JFrame("Options");
 			cOptions = new ConnectOptions();
-			connectionWindow.add(cOptions, BorderLayout.NORTH);
-			connectionWindow.pack();
+			cOptions.pack();
 			cOptions.getInsertName().setText(pref.get("profile.userName", ""));
 			cOptions.getInsertNick().setText(pref.get("profile.nickname", ""));
 			cOptions.getInsertAlt1().setText(pref.get("profile.alt1", ""));
 			cOptions.getInsertAlt2().setText(pref.get("profile.alt2", ""));
 			cOptions.getConnectButton().addActionListener(new CreateSession());
-			connectionWindow.setVisible(true);
+			cOptions.setVisible(true);
 		}
 		
 	}
@@ -110,16 +118,22 @@ public class IrcClientWorkspace extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			String userName = cOptions.getInsertName().getText();
+			String nickName = cOptions.getInsertNick().getText();
+			String altNick1 = cOptions.getInsertAlt1().getText();
+			String altNick2 = cOptions.getInsertAlt2().getText();
+			
 			if(conManager == null)
 			{
-				conManager = new ConnectionManager(new Profile(cOptions.getInsertName().getText(), cOptions.getInsertNick().getText(), cOptions.getInsertAlt1().getText(), cOptions.getInsertAlt2().getText()));
-				pref.put("profile.userName", cOptions.getInsertName().getText());
-				pref.put("profile.nickname", cOptions.getInsertNick().getText());
-				pref.put("profile.alt1", cOptions.getInsertAlt1().getText());
-				pref.put("profile.alt2", cOptions.getInsertAlt2().getText());
+				conManager = new ConnectionManager(new Profile(userName, nickName, altNick1, altNick2));
+				pref.put("profile.userName", userName);
+				pref.put("profile.nickname", nickName);
+				pref.put("profile.alt1", altNick1);
+				pref.put("profile.alt2", altNick2);
 			}
 			new ConnectionSetup(((String)cOptions.getserverChosen().getSelectedItem()), conManager, connectionList);
 			connectionList.setConManager(conManager);
+			cOptions.dispose();
 		}
 		
 	}

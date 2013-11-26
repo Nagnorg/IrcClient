@@ -90,7 +90,11 @@ class ServerInformation extends JPanel{
 		public void actionPerformed(ActionEvent e){
 			if(session != null){
 				channelListModel.removeAllElements();
-				if(channelSearch.getText().length() > 3) session.chanList();
+				String searchString = channelSearch.getText();
+				if(searchString.length() > 3){
+					if(searchString.startsWith("#")) session.chanList(searchString);
+					else session.chanList();
+				}
 				serverText.recieveMessage("\nSearching for channels");
 			}
 		}

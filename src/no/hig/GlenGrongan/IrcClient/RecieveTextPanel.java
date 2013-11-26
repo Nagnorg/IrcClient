@@ -16,6 +16,7 @@ class RecieveTextPanel extends JPanel{
 	public RecieveTextPanel(){
 		setLayout(new BorderLayout());
 		add(textScrollPane = new JScrollPane(text = new JTextPane()));
+		text.setContentType("charset=UTF-8");
 		text.setEditable(false);
 	}
 	public void recieveMessage(String message){
