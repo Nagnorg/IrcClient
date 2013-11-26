@@ -19,11 +19,11 @@ import jerklib.Session;
 public class ChannelUsers extends JPanel {
 	List<User> users;
 
-	JList channelList;
-	DefaultListModel channelListModel;
+	JList userList;
+	DefaultListModel userListModel;
 	//JTextField channelSearch;
 	//JButton channelSearchButton;
-	JScrollPane channelListScroller;
+	JScrollPane userListScroller;
 	
 	public ChannelUsers() {
 		this.users = new ArrayList<User>();
@@ -39,12 +39,13 @@ public class ChannelUsers extends JPanel {
 	
 	public void createLayout() {
 		setLayout(new BorderLayout());
-		channelList = new JList();
-		channelListModel = new DefaultListModel();
-		channelList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		channelList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		userListModel = new DefaultListModel();
+		for(User usersInstance : users) userListModel.addElement(usersInstance.getName());
+		userList = new JList(userListModel);
+		userList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		userList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		
-		add(channelListScroller = new JScrollPane(channelList), BorderLayout.CENTER);
+		add(userListScroller = new JScrollPane(userList), BorderLayout.CENTER);
 	}
 	
 	public void setUsers(List<User> users) {
@@ -63,8 +64,11 @@ public class ChannelUsers extends JPanel {
 	public void renameUser(String oldnick, String newnick) {
 		int index = getUserPosition(oldnick);
 		if(index != -1) { 
+			userListModel.remove(index);
 			users.get(index).setName(newnick);
 			Collections.sort(users);
+			userListModel.add(getUserPosition(newnick), newnick);
+			updateUI();
 		}
 	}
 	

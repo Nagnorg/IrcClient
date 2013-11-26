@@ -86,15 +86,14 @@ public class ConnectionSetup implements IRCEventListener{
 		{
 			JoinCompleteEvent jce = (JoinCompleteEvent)e;
 			chatWindow.add(new ChannelChat(jce.getChannel()));
-			connectionList.addChannelNode(session.getConnectedHostName(), jce.getChannel().getName(),chatWindow.get((session.getChannels().size())-1));
+			ChannelChat ccObject = chatWindow.get((session.getChannels().size())-1); // Newest chat window
+			connectionList.addChannelNode(session.getConnectedHostName(), jce.getChannel().getName(),ccObject);
 			message = "\nYou've joined " + jce.getChannel().getName();
 			information.getServerText().recieveMessage(message);
 			if(jce.getChannel().getTopic() != ""){
 				message = message + "\nThe topic is " + jce.getChannel().getTopic();
 			}
-			
-			ChannelChat ccObject = chatWindow.get((session.getChannels().size())-1);
-			ccObject.getOutText().recieveMessage(message);
+			ccObject.getOutText().recieveMessage(message); // Writes topic
 			
 			List<User> nicks = new ArrayList<User>();
 			for(String  nick : ccObject.getChannel().getNicks()) {
