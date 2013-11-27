@@ -1,6 +1,9 @@
 package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,8 +25,12 @@ public abstract class ChatWindow extends JFrame{
 	JTextField inText;		// Messages going TO server.
 	JButton sendButton;
 	JScrollPane textScrollPane;
+	Preferences pref;
+	ResourceBundle res;
 	public ChatWindow(String s1, String s2){
 		super(s1 + ":" + s2);
+		pref = Preferences.userNodeForPackage( getClass() );
+		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
 		setLayout(new BorderLayout());
 		add (outTextPanel = createOutTextPanel(), BorderLayout.CENTER);
 		add(inTextPanel = createInTextPanel(), BorderLayout.SOUTH);

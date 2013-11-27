@@ -1,8 +1,15 @@
 package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import jerklib.Channel;
 import jerklib.Session;
@@ -10,20 +17,36 @@ import jerklib.Session;
 public class ChannelChat extends ChatWindow{
 	Channel channel;
 	ChannelUsers userList;
+	JPopupMenu userInteraction;
 	public ChannelChat(String s1, String s2) {
 		super(s1, s2);
 		// Should never run.
 	}
 	public ChannelChat(Channel c){
 		super(c.getSession().getConnectedHostName(), c.getName());
+		channel = c;
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());
 		outTextPanel.add(userList = new ChannelUsers(), BorderLayout.EAST);
 		
-		channel = c;
+		createPopupMenu();
+		MouseListener popupListener = new PopupListener();
+		userList.getUserList().addMouseListener(popupListener);
+
 		setVisible(true);
 		setSize(500,300);
 		
+	}
+	
+	private void createPopupMenu(){
+		JMenuItem muteItem = new JMenuItem(res.getString("IrcClientChannelChat.popupMenu.muteItem"));
+		JMenuItem privateChatItem = new JMenuItem(res.getString("IrcClientChannelChat.popupMenu.priChatItem"));
+		JMenuItem whoItem = new JMenuItem(res.getString("IrcClientChannelChat.popupMenu.whoItem"));
+		
+		
+		userInteraction = new JPopupMenu();
+		userInteraction.add(muteItem);
+		userInteraction.add(privateChatItem);
 	}
 	
 	public void setChannel(Channel c){
@@ -36,41 +59,16 @@ public class ChannelChat extends ChatWindow{
 		return channel;
 	}
 	
-	class sendEvent implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			String message = inText.getText();
-			if(message.length() <= 512 && message.length() > 3){
-				if(message.startsWith("/")){
-					String[] command = message.split(" ", 2);
-					switch(command[0].toLowerCase()){
-						case "/join" : channel.getSession().join(command[1]); break;
-						case "/part": channel.part(command[1]); break;
-						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway(); break;
-						case "/me": 
-						case "/action": channel.action(command[1]); break;
-						case "/changenick": channel.getSession().changeNick(command[1]); break;
-						default : outText.recieveMessage("Unknown command", "Information"); break;
-					}
-				}
-				else{
-					channel.say(message);
-					/*System.out.println(message);
-					System.out.println(channel.getName());*/
-				}
-				inText.setText("");
-			}
-		}
-	}
-
+	
 	public ChannelUsers getUserList() {
 		return userList;
 	}
 	
 	public void setUserList(ChannelUsers userList) {
-		//outTextPanel.remove(userList);
+		outTextPanel.remove(userList);
 		this.userList = userList;
+		MouseListener popupListener = new PopupListener();
+		userList.getUserList().addMouseListener(popupListener);
 		outTextPanel.add(userList, BorderLayout.EAST);
 		outTextPanel.updateUI();
 	}
@@ -112,5 +110,62 @@ public class ChannelChat extends ChatWindow{
 			System.out.println("--------");
 		}
 	}
+	
+	/**
+	 * 
+	 * Sends message written by user to server.
+	 *
+	 */
+	class sendEvent implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String message = inText.getText();
+			if(message.length() <= 512 && message.length() > 3){
+				if(message.startsWith("/")){
+					String[] command = message.split(" ", 2);
+					switch(command[0].toLowerCase()){
+						case "/join" : channel.getSession().join(command[1]); break;
+						case "/part": channel.part(command[1]); break;
+						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway(); break;
+						case "/me": 
+						case "/action": channel.action(command[1]); break;
+						case "/nick":
+						case "/changenick": channel.getSession().changeNick(command[1]); break;
+						default : outText.recieveMessage(res.getString("IrcClientChannelChat.popupMenu.whoItem"), "Error"); break;
+					}
+				}
+				else{
+					channel.say(message);
+					/*System.out.println(message);
+					System.out.println(channel.getName());*/
+				}
+				inText.setText("");
+			}
+		}
+	}
+	
+	class PopupListener extends MouseAdapter {
+	    public void mousePressed(MouseEvent e) {
+	    	userList.getUserList().setSelectedIndex(getRow(e.getPoint()));
+	        showPopup(e);
+	    }
+
+		public void mouseReleased(MouseEvent e) {
+			userList.getUserList().setSelectedIndex(getRow(e.getPoint()));
+	        showPopup(e);
+	    }
+
+	    private void showPopup(MouseEvent e) {
+	        if (e.isPopupTrigger()) {
+	            userInteraction.show(e.getComponent(),
+	                       e.getX(), e.getY());
+	        }
+	    }
+	    private int getRow(Point point) {
+            return userList.getUserList().locationToIndex(point);
+	    }
+	}
+
 
 }

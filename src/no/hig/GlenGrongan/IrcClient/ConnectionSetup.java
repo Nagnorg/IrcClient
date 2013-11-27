@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -41,8 +44,13 @@ public class ConnectionSetup implements IRCEventListener{
 	List<ChannelChat> chatWindow = new ArrayList<ChannelChat>();// List with Channelchat windows, one for each channel part of session
 	ConnectionList connectionList;			
 	ServerInformation information;
+	Preferences pref;
+	ResourceBundle res;
+	
 	public ConnectionSetup(String server, ConnectionManager conMan,ConnectionList list)
 	{
+		pref = Preferences.userNodeForPackage( getClass() );
+		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
 		connectionList = list;
 		ConnectionManager conManager = conMan;
 		//Creates a new session.
@@ -73,13 +81,14 @@ public class ConnectionSetup implements IRCEventListener{
  
 		}
 		else if(e.getType() == Type.CONNECTION_LOST){
-			information.serverText.recieveMessage("\n g&mIRC has lost connection to the server.", "ConnectionLost");
+			message = "/n" + res.getString("IrcClientConnectionSetup.lostConnection");
+			information.serverText.recieveMessage(message, "ConnectionLost");
 		}
 		else if(e.getType()==Type.CTCP_EVENT)
 		{
 			CtcpEvent ctcpe = (CtcpEvent) e;
 			String action = ctcpe.getCtcpString().replace("ACTION", " ");
-			message = "\n*" + ctcpe.getNick() + action + "*";
+			message = "*" + ctcpe.getNick() + action + "*";
 			chatWindow.get(findIndex(ctcpe.getChannel().getName())).getOutText().recieveMessage(message, "Message");
 		}
 		else if(e.getType() == Type.CHANNEL_LIST_EVENT){
@@ -110,10 +119,10 @@ public class ConnectionSetup implements IRCEventListener{
 			chatWindow.add(new ChannelChat(jce.getChannel()));
 			ChannelChat ccObject = chatWindow.get((session.getChannels().size())-1); // Newest chat window
 			connectionList.addChannelNode(session.getConnectedHostName(), jce.getChannel().getName(),ccObject);
-			message = "\nYou've joined " + jce.getChannel().getName();
+			message = res.getString("IrcClientConnectionSetup.joinedMessage") + jce.getChannel().getName();
 			information.getServerText().recieveMessage(message, "JoinComplete");
 			if(jce.getChannel().getTopic() != ""){
-				message = message + "\nThe topic is " + jce.getChannel().getTopic();
+				message = message + res.getString("IrcClientConnectionSetup.topicMessage") + jce.getChannel().getTopic();
 			}
 			ccObject.getOutText().recieveMessage(message, "Topic"); // Writes topic
 			
@@ -129,7 +138,7 @@ public class ConnectionSetup implements IRCEventListener{
 		{
 			MotdEvent me = (MotdEvent) e;
 			message = me.getMotdLine();
-			if(message.startsWith("-")){message = message + "\n";}
+			if(message.startsWith("-")){message = message;}
 			information.getServerText().recieveMessage(message, "Motd");
 		}
 		else if(e.getType() == Type.NICK_CHANGE) {
@@ -141,7 +150,7 @@ public class ConnectionSetup implements IRCEventListener{
 		}
 		else if(e.getType() == Type.NOTICE){
 			NoticeEvent ne = (NoticeEvent) e;
-			message = "\n" + ne.getNoticeMessage();
+			message = ne.getNoticeMessage();
 			if(ne.getChannel() != null) chatWindow.get(findIndex(ne.getChannel().getName())).getOutText().recieveMessage(message, "Notice");
 			else information.getServerText().recieveMessage(message, "Notice");
 		}

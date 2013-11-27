@@ -5,6 +5,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -34,7 +37,12 @@ class ServerInformation extends JPanel{
 	JScrollPane channelListScroller;
 	Session session;
 	
+	Preferences pref;
+	ResourceBundle res;
+	
 	public ServerInformation(){
+		pref = Preferences.userNodeForPackage( getClass() );
+		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
 		setLayout(new BorderLayout());
 		add(serverText = new RecieveTextPanel(), BorderLayout.CENTER);
 		
@@ -53,14 +61,14 @@ class ServerInformation extends JPanel{
 		JPanel searchPanel = new JPanel();
 		searchPanel.setLayout(new BorderLayout());
 		searchPanel.add(channelSearch = new JTextField("", 10), BorderLayout.CENTER);
-		searchPanel.add(channelSearchButton = new JButton("Search"), BorderLayout.EAST);
+		searchPanel.add(channelSearchButton = new JButton(res.getString("IrcClientServerInformation.channelList.searchButton")), BorderLayout.EAST);
 		channelSearchButton.addActionListener(new searchForChannel());
 		channelSearch.addActionListener(new searchForChannel());
 		
 		
 		layout.add(channelListScroller = new JScrollPane(channelList), BorderLayout.CENTER);
 		layout.add(searchPanel, BorderLayout.NORTH);
-		layout.add(joinChannelButton = new JButton("Join"), BorderLayout.SOUTH);
+		layout.add(joinChannelButton = new JButton(res.getString("IrcClientServerInformation.channelList.joinButton")), BorderLayout.SOUTH);
 		joinChannelButton.addActionListener(new joinChannel());
 		return layout;
 	}
@@ -95,7 +103,7 @@ class ServerInformation extends JPanel{
 					if(searchString.startsWith("#")) session.chanList(searchString);
 					else session.chanList();
 				}
-				serverText.recieveMessage("\nSearching for channels", "Information");
+				serverText.recieveMessage(res.getString("IrcClientServerInformation.serverTest.searchingString"), "Information");
 			}
 		}
 	}

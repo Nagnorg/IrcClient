@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 import javax.swing.DefaultListModel;
@@ -50,13 +52,16 @@ public class EventCustomizer extends JFrame{
 	Color backgroundColor;
 	Color tempColor; // Variable used to avoid duplication of code.
 	JColorChooser cChooser;
-	Preferences pref;
 	
 	String selectedEvent;
 	
+	Preferences pref;
+	ResourceBundle res;
+	
 	public EventCustomizer() {
-		super("Event Customizer");
 		pref = Preferences.userNodeForPackage( getClass() );
+		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
+		this.setTitle(res.getString("IrcClientEventCustomizer.title"));
 		setLayout(new BorderLayout());
 		add(listPanel = createListPanel(), BorderLayout.CENTER);	// Creates the list
 		eventList.addListSelectionListener(		// Adds listener for selections of elements
@@ -99,8 +104,8 @@ public class EventCustomizer extends JFrame{
 		layout.setLayout(new BorderLayout());
 		previewPanel = new JPanel(); previewPanel.setLayout(new BorderLayout());
 		layout.add(createCustomPanel(), BorderLayout.SOUTH);
-		previewPanel.add(previewArea = new JTextArea("This is a preview"), BorderLayout.CENTER);
-		JButton setButton = new JButton("Set style");
+		previewPanel.add(previewArea = new JTextArea(res.getString("IrcClientEventCustomizer.previewPanel.defText")), BorderLayout.CENTER);
+		JButton setButton = new JButton(res.getString("IrcClientEventCustomizer.previewPanel.setStyle"));
 		previewPanel.add(setButton, BorderLayout.EAST);
 		setButton.addActionListener(new ActionListener(){
 
@@ -136,7 +141,7 @@ public class EventCustomizer extends JFrame{
 		gbc.gridwidth = 1; gbc.gridheight = 1;
 		gbc.anchor = java.awt.GridBagConstraints.EAST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
-		l.setConstraints(tempLabel = new JLabel("Font"), gbc);
+		l.setConstraints(tempLabel = new JLabel(res.getString("IrcClientEventCustomizer.customPanel.fontLabel")), gbc);
 		fontPanel.add(tempLabel);
 		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -151,7 +156,7 @@ public class EventCustomizer extends JFrame{
 		fontOptions.setSelectedItem(pref.get("customized"+selectedEvent+"Font", "Calibri"));
 		fontOptions.addActionListener(new ChangeFontElement());
 		
-		bold = new JCheckBox("bold");
+		bold = new JCheckBox(res.getString("IrcClientEventCustomizer.customPanel.bold"));
 		gbc.gridx = 1; gbc.gridy = 2;
 		gbc.gridwidth = 1; gbc.gridheight = 1;
 		gbc.anchor = java.awt.GridBagConstraints.WEST;
@@ -161,21 +166,21 @@ public class EventCustomizer extends JFrame{
 		bold.setSelected(pref.getBoolean("customized"+selectedEvent+"Bold", false));
 		bold.addActionListener(new ChangeFontElement());
 		
-		italic = new JCheckBox("italic");
+		italic = new JCheckBox(res.getString("IrcClientEventCustomizer.customPanel.italic"));
 		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.gridwidth = 1; gbc.gridheight = 1;
 		gbc.anchor = java.awt.GridBagConstraints.WEST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
 		l.setConstraints(italic, gbc);
 		fontPanel.add(italic);
-		italic.setSelected(pref.getBoolean("customized"+selectedEvent+"Bold", false));
+		italic.setSelected(pref.getBoolean("customized"+selectedEvent+"Italic", false));
 		italic.addActionListener(new ChangeFontElement());
 		
 		gbc.gridx = 3; gbc.gridy = 2;
 		gbc.gridwidth = 1; gbc.gridheight = 2;
 		gbc.anchor = java.awt.GridBagConstraints.EAST;
 		gbc.fill = java.awt.GridBagConstraints.NONE;
-		l.setConstraints(tempLabel = new JLabel("Font size"), gbc);
+		l.setConstraints(tempLabel = new JLabel(res.getString("IrcClientEventCustomizer.customPanel.sizeLabel")), gbc);
 		fontPanel.add(tempLabel);
 		
 		fontSize = new JSpinner(new SpinnerNumberModel(pref.getInt("customized"+selectedEvent+"FontSize", 12), 6, 18, 1));
@@ -199,13 +204,13 @@ public class EventCustomizer extends JFrame{
 		
 		colorPanel = new JPanel(); colorPanel.setLayout(new GridLayout(2,1));
 		foregroundColor = new Color(pref.getInt("customized"+selectedEvent+"Foreground", Color.black.getRGB()));
-		colorPanel.add(foreground = new JButton("Foreground"));
+		colorPanel.add(foreground = new JButton(res.getString("IrcClientEventCustomizer.customPanel.foreground")));
 		foreground.addActionListener(new ActionListener(){ // TODO: Fix duplication
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				JFrame colorChooser = new JFrame("Choose a color");
+				JFrame colorChooser = new JFrame(res.getString("IrcClientEventCustomizer.customPanel.chooseColor"));
 				cChooser = new JColorChooser(foregroundColor);
 				cChooser.getSelectionModel().addChangeListener(new ChangeListener(){
 
@@ -225,13 +230,13 @@ public class EventCustomizer extends JFrame{
 			
 		});
 		backgroundColor = new Color(pref.getInt("customized"+selectedEvent+"Background", Color.white.getRGB()));
-		colorPanel.add(background = new JButton("Background"));
+		colorPanel.add(background = new JButton(res.getString("IrcClientEventCustomizer.customPanel.background")));
 		background.addActionListener(new ActionListener(){ // TODO: Fix duplication
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				JFrame colorChooser = new JFrame("Choose a color");
+				JFrame colorChooser = new JFrame(res.getString("IrcClientEventCustomizer.customPanel.chooseColor"));
 				cChooser = new JColorChooser(backgroundColor);
 				cChooser.getSelectionModel().addChangeListener(new ChangeListener(){
 
@@ -256,7 +261,9 @@ public class EventCustomizer extends JFrame{
 		layout.add(colorPanel);
 		return layout;
 	}
-	public void changePreviewArea(){
+	
+	
+	public void changePreviewArea(){		// Updates the preview of user edited fonts.
 		Font newFont;
 		if(bold.isSelected()&&italic.isSelected()){
 			newFont = new Font((String) fontOptions.getSelectedItem(), Font.BOLD+Font.ITALIC, ((Integer)fontSize.getValue()));
@@ -272,7 +279,7 @@ public class EventCustomizer extends JFrame{
 		previewArea.setForeground(foregroundColor);
 		previewArea.setBackground(backgroundColor);
 	}
-	public void changeColor(){
+	public void changeColor(){				// Changes the active foreground or background color UNUSED
 		JFrame colorChooser = new JFrame("Choose a color");
 		cChooser = new JColorChooser(tempColor);
 		cChooser.getSelectionModel().addChangeListener(new ChangeListener(){
@@ -290,7 +297,7 @@ public class EventCustomizer extends JFrame{
 		colorChooser.pack();
 	}
 	
-	class ChangeFontElement implements ActionListener{
+	class ChangeFontElement implements ActionListener{	// Used by most font editors.
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

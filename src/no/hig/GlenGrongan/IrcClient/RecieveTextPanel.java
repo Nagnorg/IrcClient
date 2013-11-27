@@ -36,7 +36,7 @@ class RecieveTextPanel extends JPanel{
 		
 		try {
 			// add the text to the document
-			text.getStyledDocument().insertString(pos, message, sas);
+			text.getStyledDocument().insertString(pos, message+"/n", sas);
 		} catch (BadLocationException ble) {
 			ble.printStackTrace();
 		}
