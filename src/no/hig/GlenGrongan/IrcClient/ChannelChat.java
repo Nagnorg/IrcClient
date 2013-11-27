@@ -75,6 +75,34 @@ public class ChannelChat extends ChatWindow{
 		outTextPanel.updateUI();
 	}
 	
+	// Nicklist commands
+	
+	public void ban(String nick, String type) {
+		// TODO: Add content
+	}
+	
+	public void ctcp() {
+		// TODO: Add content, check parameters
+	}
+	
+	public void invite(String nick, Channel channel) {
+		// TODO: Add content, check resolution
+	}
+	
+	public void kick(String nick) {
+		// TODO: Add content
+	}
+	
+	public void query(String nick, String message) {
+		// TODO: Add content, parameter evaluation
+	}
+	
+	public void who(String nick) {
+		// TODO: Add content
+	}
+	
+	
+	
 	public void systemOutput() {
 		for(User user : userList.getUsers()) {
 			System.out.println("--------");
