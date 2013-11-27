@@ -95,7 +95,7 @@ class ServerInformation extends JPanel{
 					if(searchString.startsWith("#")) session.chanList(searchString);
 					else session.chanList();
 				}
-				serverText.recieveMessage("\nSearching for channels");
+				serverText.recieveMessage("\nSearching for channels", "Information");
 			}
 		}
 	}

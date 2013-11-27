@@ -51,7 +51,7 @@ public class ChannelChat extends ChatWindow{
 						case "/me": 
 						case "/action": channel.action(command[1]); break;
 						case "/changenick": channel.getSession().changeNick(command[1]); break;
-						default : outText.recieveMessage("Unknown command"); break;
+						default : outText.recieveMessage("Unknown command", "Information"); break;
 					}
 				}
 				else{

@@ -56,7 +56,13 @@ public class ConnectionSetup implements IRCEventListener{
 	public void receiveEvent(IRCEvent e)
 	{
 		String message;
-		if(e.getType() == Type.CONNECT_COMPLETE)
+		if(e.getType()== Type.CHANNEL_MESSAGE)
+		{
+			MessageEvent me = (MessageEvent) e;
+			message = "\n<" + me.getNick() + ">: " + me.getMessage();
+			chatWindow.get(findIndex(me.getChannel().getName())).getOutText().recieveMessage(message, "Message");
+		}
+		else if(e.getType() == Type.CONNECT_COMPLETE)
 		{
 			ConnectionCompleteEvent cce = (ConnectionCompleteEvent)e;
 			connectionList.addServerNode(cce.getActualHostName(), information);
@@ -65,7 +71,14 @@ public class ConnectionSetup implements IRCEventListener{
  
 		}
 		else if(e.getType() == Type.CONNECTION_LOST){
-			information.serverText.recieveMessage("\n g&mIRC has lost connection to the server.");
+			information.serverText.recieveMessage("\n g&mIRC has lost connection to the server.", "ConnectionLost");
+		}
+		else if(e.getType()==Type.CTCP_EVENT)
+		{
+			CtcpEvent ctcpe = (CtcpEvent) e;
+			String action = ctcpe.getCtcpString().replace("ACTION", " ");
+			message = "\n*" + ctcpe.getNick() + action + "*";
+			chatWindow.get(findIndex(ctcpe.getChannel().getName())).getOutText().recieveMessage(message, "Message");
 		}
 		else if(e.getType() == Type.CHANNEL_LIST_EVENT){
 			ChannelListEvent cle = (ChannelListEvent)e;
@@ -82,6 +95,10 @@ public class ConnectionSetup implements IRCEventListener{
 				}
 			}
 		}
+		// User Related
+		else if(e.getType() == Type.JOIN) {
+			System.out.println("User joined: " +e.getRawEventData());
+		}
 		else if(e.getType() == Type.JOIN_COMPLETE)
 		{
 			JoinCompleteEvent jce = (JoinCompleteEvent)e;
@@ -89,11 +106,11 @@ public class ConnectionSetup implements IRCEventListener{
 			ChannelChat ccObject = chatWindow.get((session.getChannels().size())-1); // Newest chat window
 			connectionList.addChannelNode(session.getConnectedHostName(), jce.getChannel().getName(),ccObject);
 			message = "\nYou've joined " + jce.getChannel().getName();
-			information.getServerText().recieveMessage(message);
+			information.getServerText().recieveMessage(message, "JoinComplete");
 			if(jce.getChannel().getTopic() != ""){
 				message = message + "\nThe topic is " + jce.getChannel().getTopic();
 			}
-			ccObject.getOutText().recieveMessage(message); // Writes topic
+			ccObject.getOutText().recieveMessage(message, "Topic"); // Writes topic
 			
 			List<User> nicks = new ArrayList<User>();
 			for(String  nick : ccObject.getChannel().getNicks()) {
@@ -108,37 +125,8 @@ public class ConnectionSetup implements IRCEventListener{
 			MotdEvent me = (MotdEvent) e;
 			message = me.getMotdLine();
 			if(message.startsWith("-")){message = message + "\n";}
-			information.getServerText().recieveMessage(message);
+			information.getServerText().recieveMessage(message, "Motd");
 		}
-		else if(e.getType() == Type.NOTICE){
-			NoticeEvent ne = (NoticeEvent) e;
-			message = "\n" + ne.getNoticeMessage();
-			if(ne.getChannel() != null) chatWindow.get(findIndex(ne.getChannel().getName())).getOutText().recieveMessage(message);
-			else information.getServerText().recieveMessage(message);
-		}
-		else if(e.getType()== Type.CHANNEL_MESSAGE)
-		{
-			MessageEvent me = (MessageEvent) e;
-			message = "\n<" + me.getNick() + ">: " + me.getMessage();
-			chatWindow.get(findIndex(me.getChannel().getName())).getOutText().recieveMessage(message);
-		}
-		else if(e.getType()==Type.CTCP_EVENT)
-		{
-			CtcpEvent ctcpe = (CtcpEvent) e;
-			String action = ctcpe.getCtcpString().replace("ACTION", " ");
-			message = "\n*" + ctcpe.getNick() + action + "*";
-			chatWindow.get(findIndex(ctcpe.getChannel().getName())).getOutText().recieveMessage(message);
-		}
-		
-		// User Related
-		else if(e.getType() == Type.JOIN) {
-			System.out.println("User joined: " +e.getRawEventData());
-		}
-		
-		else if(e.getType() == Type.QUIT) {
-			System.out.println("User quit: " +e.getRawEventData());
-		}
-		
 		else if(e.getType() == Type.NICK_CHANGE) {
 			NickChangeEvent nce = (NickChangeEvent) e;
 			String oldnick = nce.getOldNick();
@@ -147,6 +135,15 @@ public class ConnectionSetup implements IRCEventListener{
 			chatWindow.get((session.getChannels().size())-1).getUserList().renameUser(oldnick, newnick);
 			
 			System.out.println("User changed name: " +e.getRawEventData());
+		}
+		else if(e.getType() == Type.NOTICE){
+			NoticeEvent ne = (NoticeEvent) e;
+			message = "\n" + ne.getNoticeMessage();
+			if(ne.getChannel() != null) chatWindow.get(findIndex(ne.getChannel().getName())).getOutText().recieveMessage(message, "Notice");
+			else information.getServerText().recieveMessage(message, "Notice");
+		}
+		else if(e.getType() == Type.QUIT) {
+			System.out.println("User quit: " +e.getRawEventData());
 		}
 		
 		System.out.println(e.getType() + " : " + e.getRawEventData());
