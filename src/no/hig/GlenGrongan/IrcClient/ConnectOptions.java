@@ -6,9 +6,12 @@ package no.hig.GlenGrongan.IrcClient;
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -77,12 +80,67 @@ import java.util.List;
 	
 	public ConnectOptions () {
 		super("Options");
+		
 		pref = Preferences.userNodeForPackage( getClass() );
 		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
 		
-		networkList = new ConnectOptionsModel(loadIni((null)));
-		// TODO: String conversion
+		// Handles the creation of new servers
+		addButton.addActionListener(
+				new ActionListener(){
+					// TODO: String resources
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String name = JOptionPane.showInputDialog(null, "Provide a name for the new channel", "Add name", JOptionPane.PLAIN_MESSAGE);
+						if(name.matches(".*\\w+\\.[\\w-]+\\.\\w+.*")) {
+							editXML(name, "Add");
+							serverList = new ConnectOptionsModel(loadXML());
+							serverChosen.setModel(serverList);
+						}
+						else JOptionPane.showMessageDialog(null, "The name you provided does not appear to be a server name");
+					}	
+				});
+		
+		// Handles the editing of current servers
+		editButton.addActionListener(
+				new ActionListener(){
 
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if(networkList.getSelectedIndex() == 0) {
+							String oldName = serverList.getSelectedItem();
+							String newName = JOptionPane.showInputDialog(null, "Provide a new name for the " +oldName, "Edit name", JOptionPane.PLAIN_MESSAGE);
+							if(newName.matches(".*\\w+\\.[\\w-]+\\.\\w+.*")) {
+								editXML(oldName, newName);
+								serverList = new ConnectOptionsModel(loadXML());
+								serverChosen.setModel(serverList);
+							}
+							else JOptionPane.showMessageDialog(null, "The name you provided does not appear to be a server name");
+						} else JOptionPane.showMessageDialog(null, "You can only change the name of servers on your favorites list");
+					}
+				});
+		
+		// Handles the deletion of current servers
+		removeButton.addActionListener(
+				new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if(networkList.getSelectedIndex() == 0) {
+							String name = serverList.getSelectedItem();
+							if(JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " +name+ "?", "Accept?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+								editXML(name, "Remove");
+								serverList = new ConnectOptionsModel(loadXML());
+								serverChosen.setModel(serverList);	
+							}
+							
+						} else JOptionPane.showMessageDialog(null, "You can only remove the servers on your favorites list");
+					}
+				});
+		
+		// Initializes network and server list
+		// Network list retrieves a list of names from the servers.ini file
+		// Servers are added from the xml file, assuming that the user wants his custom options presented to him first
+		networkList = new ConnectOptionsModel(loadIni((null)));
 		networkChosen.setModel(networkList);
 		serverList = new ConnectOptionsModel(loadXML());
 		serverChosen.setModel(serverList);
@@ -90,6 +148,8 @@ import java.util.List;
 		networkChosen.addItemListener(
 				new ItemListener(){
 
+					// Reads a new list of servers each time the network is changed
+					// Data is taken from either the xml or ini file, depending on whether the network is set to favorites or not, the first network in the list
 					@Override
 					public void itemStateChanged(ItemEvent e) {
 						if(e.getStateChange() == ItemEvent.SELECTED){
@@ -472,8 +532,7 @@ import java.util.List;
 				
 			}
 			catch(IOException e){
-				// TODO: String manipulation
-				System.err.println("Error occurre while attempting to read.");
+				JOptionPane.showMessageDialog(null, "An error occured while attempting to read a file.");
 			}
 			
 		} catch(FileNotFoundException fnfe) { 
@@ -508,11 +567,13 @@ import java.util.List;
 					if(node.getNodeName().equals("address")) servers.add(content);
 				}
 			}
+		} catch (ParserConfigurationException e) {
 			
-		} catch(Exception e) {
-			System.out.println("A problem occurred while trying to read the XML file.");
+		} catch (SAXException e) {
+			
+		} catch (IOException e) {
+			
 		}
-		
 		return servers;
 	}
 	
@@ -523,7 +584,6 @@ import java.util.List;
 	 */
 	public void editXML(String name, String mode) {
 		try {
-			// TODO: String management
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document document = builder.parse("src/favorites.xml");
@@ -560,8 +620,16 @@ import java.util.List;
 			StreamResult result = new StreamResult(file);
 			transformer.transform(source, result);
 			
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			
+		} catch (TransformerConfigurationException e) {
+			
+		} catch (TransformerException e) {
+			
+		} catch (SAXException e) {
+			
+		} catch (IOException e) {
+			
 		}
 	}
 }
