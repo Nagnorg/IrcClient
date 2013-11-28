@@ -146,7 +146,7 @@ public class ConnectionSetup implements IRCEventListener{
 		else if(e.getType() == Type.JOIN_COMPLETE)
 		{
 			JoinCompleteEvent jce = (JoinCompleteEvent)e;
-			chatWindow.add(new ChannelChat(jce.getChannel()));
+			chatWindow.add(new ChannelChat(jce.getChannel(), myProfile.getActualNick()));
 			ChannelChat ccObject = (ChannelChat) chatWindow.get((session.getChannels().size())-1); // Newest chat window
 			connectionList.addChannelNode(session.getConnectedHostName(), jce.getChannel().getName(),ccObject);
 			message = res.getString("IrcClientConnectionSetup.youJoinedMessage") + jce.getChannel().getName();
@@ -224,6 +224,10 @@ public class ConnectionSetup implements IRCEventListener{
 			MessageEvent me = (MessageEvent) e;
 			UserChat ccWindow;
 			int index = (findIndex(me.getUserName()));
+			if(isMe(me.getUserName(), me.getNick())){
+				System.out.println("Her");
+				chatWindow.add(ccWindow = new UserChat(session.getConnectedHostName(), me.getMessage()));
+			}
 			//If Chatwindow doesn't exist.
 			if(index==-1){
 				chatWindow.add(ccWindow = new UserChat(session.getConnectedHostName(), me.getUserName()));
@@ -231,7 +235,7 @@ public class ConnectionSetup implements IRCEventListener{
 				ccWindow.getOutText().recieveMessage(message, "Message");
 			}
 			else ccWindow = (UserChat) chatWindow.get(index);
-			message = "<" + me.getNick() + ">: " + me.getMessage();
+			message = me.getNick() + " said: " + me.getMessage();
 			// writes message in the window belonging to the channel that recieved the message.
 			ccWindow.getOutText().recieveMessage(message, "Message");
 		}

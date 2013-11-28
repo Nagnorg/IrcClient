@@ -84,58 +84,6 @@ import java.util.List;
 		pref = Preferences.userNodeForPackage( getClass() );
 		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
 		
-		// Handles the creation of new servers
-		addButton.addActionListener(
-				new ActionListener(){
-					// TODO: String resources
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						String name = JOptionPane.showInputDialog(null, "Provide a name for the new channel", "Add name", JOptionPane.PLAIN_MESSAGE);
-						if(name.matches(".*\\w+\\.[\\w-]+\\.\\w+.*")) {
-							editXML(name, "Add");
-							serverList = new ConnectOptionsModel(loadXML());
-							serverChosen.setModel(serverList);
-						}
-						else JOptionPane.showMessageDialog(null, "The name you provided does not appear to be a server name");
-					}	
-				});
-		
-		// Handles the editing of current servers
-		editButton.addActionListener(
-				new ActionListener(){
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if(networkList.getSelectedIndex() == 0) {
-							String oldName = serverList.getSelectedItem();
-							String newName = JOptionPane.showInputDialog(null, "Provide a new name for the " +oldName, "Edit name", JOptionPane.PLAIN_MESSAGE);
-							if(newName.matches(".*\\w+\\.[\\w-]+\\.\\w+.*")) {
-								editXML(oldName, newName);
-								serverList = new ConnectOptionsModel(loadXML());
-								serverChosen.setModel(serverList);
-							}
-							else JOptionPane.showMessageDialog(null, "The name you provided does not appear to be a server name");
-						} else JOptionPane.showMessageDialog(null, "You can only change the name of servers on your favorites list");
-					}
-				});
-		
-		// Handles the deletion of current servers
-		removeButton.addActionListener(
-				new ActionListener(){
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if(networkList.getSelectedIndex() == 0) {
-							String name = serverList.getSelectedItem();
-							if(JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " +name+ "?", "Accept?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-								editXML(name, "Remove");
-								serverList = new ConnectOptionsModel(loadXML());
-								serverChosen.setModel(serverList);	
-							}
-							
-						} else JOptionPane.showMessageDialog(null, "You can only remove the servers on your favorites list");
-					}
-				});
 		
 		// Initializes network and server list
 		// Network list retrieves a list of names from the servers.ini file

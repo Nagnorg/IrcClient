@@ -12,7 +12,7 @@ public class UserChat extends ChatWindow{
 	Session session;
 	public UserChat(String s1, String s2) {
 		super(s1, s2);
-		//Should never be used
+		//Should never run
 	}
 	public UserChat(String s1, String s2, Session s) {
 		super(s1, s2);
@@ -21,6 +21,8 @@ public class UserChat extends ChatWindow{
 		
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());
+		
+		setVisible(true);
 	}
 	public Object getUserName() {
 		return this.user;
@@ -40,23 +42,12 @@ public class UserChat extends ChatWindow{
 						case "/away":	if(command.length <= 2)if(session.isAway()) session.setAway(command[1]); else session.unsetAway(); break;
 						case "/changenick":
 						case "/nick":	session.changeNick(command[1]); break;
-						case "/devoice":
-						case "/mute": 	break;
-						case "/invite":	break;
-						case "/modes": 	break;
-						case "/setmode":
-						case "/mode": 	break;
-						case "/who":	break;
-						case "/whois":	break;
-						case "/whowas":	break;
-						case "/msg": 	if(command.length == 3) session.sayPrivate(command[1], command[2]);
-									 	else outText.errorMessage("Not enough parameters"); break; 
 						default : outText.recieveMessage(res.getString("IrcClientChannelChat.popupMenu.whoItem"), "Error"); break;
 					}
 				}
 				else{
 					session.sayPrivate(message, user);
-					outText.recieveMessage(message, "Message");
+					outText.recieveMessage("You said: "+message, "Message");
 				}
 				inText.setText("");
 			}

@@ -20,14 +20,16 @@ public class ChannelChat extends ChatWindow{
 	Channel channel;
 	ChannelUsers userList;
 	JPopupMenu userInteraction;
+	String myNick;
 	public ChannelChat(String s1, String s2) {
 		super(s1, s2);
 		// Should never run.
 	}
-	public ChannelChat(Channel c){
+	public ChannelChat(Channel c, String nick){
 		super(c.getSession().getConnectedHostName(), c.getName());
 		
 		channel = c;
+		myNick = nick;
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());
 		outTextPanel.add(userList = new ChannelUsers(), BorderLayout.EAST);
@@ -158,13 +160,14 @@ public class ChannelChat extends ChatWindow{
 						case "/mode": 	break;
 						case "/msg": 	if(command.length == 3) channel.getSession().sayPrivate(command[1], command[2]);
 									 	else outText.errorMessage("Not enough parameters"); break; 
+						case "/private":if(command.length == 2) channel.getSession().sayPrivate(myNick, command[1]);
+					 					else outText.errorMessage("Not enough parameters"); break; 
 						default : outText.recieveMessage(res.getString("IrcClientChannelChat.popupMenu.whoItem"), "Error"); break;
 					}
 				}
 				else{
 					channel.say(message);
-					/*System.out.println(message);
-					System.out.println(channel.getName());*/
+					outText.recieveMessage("<"+myNick+">: "+message, "Message");
 				}
 				inText.setText("");
 			}
