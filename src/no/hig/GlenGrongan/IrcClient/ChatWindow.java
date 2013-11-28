@@ -25,12 +25,16 @@ public abstract class ChatWindow extends JFrame{
 	JTextField inText;		// Messages going TO server.
 	JButton sendButton;
 	JScrollPane textScrollPane;
+	
 	Preferences pref;
 	ResourceBundle res;
 	public ChatWindow(String s1, String s2){
 		super(s1 + ":" + s2);
 		pref = Preferences.userNodeForPackage( getClass() );
 		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
+		setSize (pref.getInt("chatwindow.width", 300), pref.getInt("chatwindow.height", 100));
+		setLocation (pref.getInt("chatwindow.x pos", 100), pref.getInt("chatwindow.y pos", 100));
+		
 		setLayout(new BorderLayout());
 		add (outTextPanel = createOutTextPanel(), BorderLayout.CENTER);
 		add(inTextPanel = createInTextPanel(), BorderLayout.SOUTH);

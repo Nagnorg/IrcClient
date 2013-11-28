@@ -27,9 +27,6 @@ public class ChannelChat extends ChatWindow{
 	public ChannelChat(Channel c){
 		super(c.getSession().getConnectedHostName(), c.getName());
 		
-		setSize (pref.getInt("window width", 700), pref.getInt("window height", 400));
-		setLocation (pref.getInt("window x pos", 100), pref.getInt("window y pos", 100));
-		
 		channel = c;
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());

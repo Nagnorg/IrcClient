@@ -167,8 +167,18 @@ public class ConnectionSetup implements IRCEventListener{
 		else if(e.getType()==Type.KICK_EVENT){
 			KickEvent ke = (KickEvent)e;
 			ChatWindow ccWindow = chatWindow.get(findIndex(ke.getChannel().getName()));
-			message = ke.getWho()+" "+res.getString("IrcClientConnectionSetup.kickEvent")+" "+ke.byWho()+
+			if(isMe(ke.getUserName(), ke.getWho())){
+				System.out.println("Im here");
+				connectionList.removeChannelNode(session.getConnectedHostName(), ke.getChannel().getName(), ccWindow);
+				chatWindow.remove(ccWindow);
+				ccWindow.dispose();
+				message = ke.getChannel().getName()+": "+res.getString("IrcClientConnectionSetup.userKicked")+" "+ke.byWho()+
+						". "+res.getString("IrcClientConnectionSetup.kickEventReason")+" "+ke.getMessage();
+			}
+			else{
+			message = ke.getWho()+" "+res.getString("IrcClientConnectionSetup.otherKicked")+" "+ke.byWho()+
 					". "+res.getString("IrcClientConnectionSetup.kickEventReason")+" "+ke.getMessage();
+			}
 		}
 		else if(e.getType()==Type.MODE_EVENT){
 			//TODO: Create content
@@ -198,7 +208,6 @@ public class ConnectionSetup implements IRCEventListener{
 			PartEvent pe = (PartEvent)e;
 			ChatWindow ccWindow = chatWindow.get(findIndex(pe.getChannel().getName()));
 			if(isMe(pe.getUserName(), pe.getWho())){
-				System.out.println("Im here");
 				connectionList.removeChannelNode(session.getConnectedHostName(), pe.getChannelName(), ccWindow);
 				chatWindow.remove(ccWindow);
 				ccWindow.dispose();

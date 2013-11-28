@@ -249,8 +249,10 @@ public class EventCustomizer extends JFrame{
 					
 				});
 				colorChooser.add(cChooser);
-				colorChooser.setVisible(true);
+				colorChooser.setLocation(300, 50);
+				colorChooser.setResizable(false);
 				colorChooser.pack();
+				colorChooser.setVisible(true);
 				
 			}
 			

@@ -8,12 +8,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -39,11 +44,15 @@ public class IrcClientWorkspace extends JFrame{
 	ConnectOptions cOptions;
 	ConnectionManager conManager;
 	ServerInformation informationPanel;
+	
 	Preferences pref;
+	ResourceBundle res;
 
 	public IrcClientWorkspace(){
 		super("g&mIRC");
 		pref = Preferences.userNodeForPackage( getClass() );
+		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
+		
 		setSize (pref.getInt("window width", 700), pref.getInt("window height", 400));
 		setLocation (pref.getInt("window x pos", 100), pref.getInt("window y pos", 100));
 		setLayout(new BorderLayout());
@@ -54,6 +63,9 @@ public class IrcClientWorkspace extends JFrame{
 		JToolBar workspaceToolbar = createToolbar();
 		add(workspaceToolbar, BorderLayout.NORTH);
 		workspaceToolbar.setVisible(true);
+		
+		JMenuBar workspaceMenu = createMenu();
+		
 		
 
 		addWindowListener(new java.awt.event.WindowAdapter() {
@@ -90,7 +102,14 @@ public class IrcClientWorkspace extends JFrame{
 		
 	}
 	
-	private void createMenu(){}
+	private JMenuBar createMenu(){
+		JMenuItem newConnectionItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.newConnection"));
+		JMenuItem removeConnectionItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.removeConnection"));
+		JMenuItem customizeEventItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.customizeEvents"));
+		
+		return null;
+		
+	}
 	
 	
 	
@@ -153,6 +172,8 @@ public class IrcClientWorkspace extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			EventCustomizer customizer = new EventCustomizer();	
 			customizer.pack();
+			customizer.setLocation(100, 300);
+			customizer.setResizable(false);
 			customizer.setVisible(true);
 		}
 		

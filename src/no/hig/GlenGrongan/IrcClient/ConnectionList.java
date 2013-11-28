@@ -143,8 +143,8 @@ public class ConnectionList extends JPanel{
 	 * @param si information of server to quit.
 	 */
 	public void removeServerNode(String serverName, ServerInformation si){
+		top.remove(getIndex(serverName, serverNodes));
 		serverNodes.remove(getIndex(serverName, serverNodes));
-		serverNodes.remove(serverName);
 		knownServerInformation.remove(si);
 		conTree.updateUI();
 	}
