@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import jerklib.Channel;
-import jerklib.Session;
 
 public class ChannelChat extends ChatWindow{
 	Channel channel;

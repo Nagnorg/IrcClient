@@ -1,33 +1,30 @@
 package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-
-import jerklib.Session;
+import javax.swing.SwingUtilities;
 
 public class ChannelUsers extends JPanel {
 	List<User> users;
 
 	JList userList;
 	DefaultListModel userListModel;
-	//JTextField channelSearch;
-	//JButton channelSearchButton;
 	JScrollPane userListScroller;
+	private JPopupMenu popupTable = new JPopupMenu();
 	
 	public ChannelUsers() {
 		this.users = new ArrayList<User>();
-		Collections.sort(users);
 		createLayout();
 	}
 	
@@ -46,6 +43,13 @@ public class ChannelUsers extends JPanel {
 		userList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		
 		add(userListScroller = new JScrollPane(userList), BorderLayout.CENTER);
+		userList.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if(SwingUtilities.isRightMouseButton(e))
+					;
+				
+			}
+		});
 	}
 	
 	public void setUsers(List<User> users) {

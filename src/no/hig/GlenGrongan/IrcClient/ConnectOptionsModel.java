@@ -9,18 +9,32 @@ import java.util.List;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class ConnectOptionsModel implements ComboBoxModel{
-
 	List<String> elements;
 	String selectedElement;
+	
+	public ConnectOptionsModel(List<String> names) {
+		if(names != null) {
+			elements = names;
+			if(elements.size() > 0) selectedElement = names.get(0);
+		}
+	}
+	
 	@Override
 	public int getSize() {
 		return elements.size();
 	}
 
 	@Override
-	public Object getElementAt(int index) {
+	public String getElementAt(int index) {
 		return elements.get(index);
 	}
 
@@ -43,42 +57,11 @@ public class ConnectOptionsModel implements ComboBoxModel{
 	}
 
 	@Override
-	public Object getSelectedItem() {
+	public String getSelectedItem() {
 		return selectedElement;
 	}
 	
-	public ConnectOptionsModel(String type){
-		elements = new ArrayList<String>();
-		selectedElement = null;
-		try{
-			BufferedReader br = new BufferedReader(new FileReader("servers.ini"));
-			try{
-				String line = br.readLine();
-				String docArea = "";
-				while(line != null){
-					if(line.matches("\\[[a-z]+\\]")){
-						docArea = line;
-						line = br.readLine();
-					}
-					if(line.matches("n\\d{1,3}=.+")){
-						if(docArea.contains("networks") && type == null){
-							String[] networkName = line.split("=");
-							elements.add(networkName[1]);
-							//System.out.println(index);
-						}
-						else if(line.matches("n\\d{1,3}="+type+".+")){
-							String[] serverName = line.split(":");
-							elements.add(serverName[2]);
-						}
-					}
-					line = br.readLine();
-				}
-				
-			}
-			catch(IOException e){
-				System.err.println("Mistake happened during reading.");
-			}
-		}catch(FileNotFoundException fnfe){System.err.println("Specified file not found");}
-		if(elements.size()> 0) selectedElement = elements.get(0);
+	public int getSelectedIndex() {
+		return elements.indexOf(selectedElement);
 	}
 }

@@ -103,7 +103,6 @@ public class ConnectionSetup implements IRCEventListener{
 			}
 			
 			ccObject.setUserList(new ChannelUsers(nicks));
-			ccObject.systemOutput();
 		}
 		else if(e.getType() == Type.MOTD)
 		{
