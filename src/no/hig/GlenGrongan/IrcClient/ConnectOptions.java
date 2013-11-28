@@ -32,11 +32,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -66,7 +74,7 @@ import java.util.List;
 		JButton addButton;
 		JButton editButton;
 		JButton removeButton;
-		//JButton sortButton = new JButton("Sort");
+		JButton mircButton;
 		JLabel label2;
 		JLabel label3;
 		JLabel label4;
@@ -185,6 +193,16 @@ import java.util.List;
 		gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		layout.setConstraints(removeButton, gbc);
 		add(removeButton);
+		
+		mircButton = new JButton(res.getString("IrcClientConnectOption.mircButton.label"));
+		gbc.gridx = 6;
+		gbc.gridy = 4;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.anchor = java.awt.GridBagConstraints.CENTER;
+		gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		layout.setConstraints(mircButton, gbc);
+		add(mircButton);
 		
 		label2 = new JLabel(res.getString("IrcClientConnectOption.nameLabel"));
 		gbc.gridx = 1;
@@ -337,6 +355,25 @@ import java.util.List;
 							}
 						});
 				
+				// Handles the creation of mirc's servers.ini file
+				mircButton.addActionListener(
+						new ActionListener(){
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								if(JOptionPane.showConfirmDialog(null, (res.getString("IrcClientConnectOption.mircButton.dialogContent")), (res.getString("IrcClientConnectOption.mircButton.dialogHeader")), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+									updateIniFile();
+									networkList = new ConnectOptionsModel(loadIni((null)));
+									networkChosen.setModel(networkList);
+									serverList = new ConnectOptionsModel(loadXML());
+									serverChosen.setModel(serverList);
+									// Provides some feedback that the dropdown boxes have been updated
+									JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.update.finished")));
+								}
+							}
+							
+						});
+				
 				
 		
 		
@@ -451,7 +488,6 @@ import java.util.List;
 					
 					// If the input starts with a network id, expressed as n\\d=
 					if(line.matches("^n\\d{1,3}=.+")){
-						
 						// Reads network name, enters if name is set as null and the last bracked enclosed message was [network]
 						if(docArea.contains("networks") && name == null){
 							String[] networkName = line.split("=");
@@ -459,9 +495,9 @@ import java.util.List;
 						}
 						
 						// Reads server names, enters if the input string contains the parent network
-						else if(line.matches("^n\\d{1,3}=" +name+ ".+")){
+						else if(line.matches("^n\\d{1,3}=.*:" +name)){
 							String[] serverName = line.split(":");
-							elements.add(serverName[2]);
+							elements.add(serverName[1]);
 						}
 					}
 					line = br.readLine();
@@ -489,8 +525,7 @@ import java.util.List;
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			// TODO: Add string resource
-			Document document = builder.parse("src/favorites.xml");
+			Document document = builder.parse("favorites.xml");
 			NodeList nodeList = document.getDocumentElement().getChildNodes();
 			
 			// Iterates through the address elements containing the string values
@@ -521,7 +556,7 @@ import java.util.List;
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse("src/favorites.xml");
+			Document document = builder.parse("favorites.xml");
 			document.getDocumentElement().normalize();
 			Node servers = document.getElementsByTagName("servers").item(0);
 			
@@ -551,7 +586,7 @@ import java.util.List;
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(document);
-			File file = new File("src/favorites.xml");
+			File file = new File("favorites.xml");
 			StreamResult result = new StreamResult(file);
 			transformer.transform(source, result);
 			
@@ -566,5 +601,38 @@ import java.util.List;
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.IO")));
 		}
+	}
+	
+	/**
+	 * Takes the .ini file from mirc's website and stores it locally
+	 * Content in large taken from http://www.mkyong.com/java/how-to-get-url-content-in-java/
+	 */
+	public void updateIniFile() {
+		try {
+			URL url = new URL("http://www.mirc.com/servers.ini");
+			URLConnection connection = url.openConnection();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			
+			String inputLine;
+			
+			File file = new File("servers.ini");
+			if(!file.exists()) file.createNewFile();
+			
+			FileWriter fileWriter = new FileWriter(file.getAbsolutePath());
+		    BufferedWriter writer = new BufferedWriter(fileWriter);
+			
+		    while((inputLine = reader.readLine()) != null) {
+		    	writer.write(inputLine);
+		    	writer.write("\n");
+		    }
+		    
+		    writer.close();
+		    reader.close();
+		    
+		} catch (MalformedURLException e) {
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.MalformedURL")));
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.IO")));
+		} 
 	}
 }
