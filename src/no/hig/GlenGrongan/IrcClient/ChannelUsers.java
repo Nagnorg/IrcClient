@@ -1,30 +1,38 @@
 package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
+
+import jerklib.Session;
 
 public class ChannelUsers extends JPanel {
 	List<User> users;
 
 	JList userList;
 	DefaultListModel userListModel;
+	//JTextField channelSearch;
+	//JButton channelSearchButton;
 	JScrollPane userListScroller;
-	private JPopupMenu popupTable = new JPopupMenu();
-	
 	public ChannelUsers() {
 		this.users = new ArrayList<User>();
+		Collections.sort(users);
 		createLayout();
 	}
 	
@@ -43,13 +51,6 @@ public class ChannelUsers extends JPanel {
 		userList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		
 		add(userListScroller = new JScrollPane(userList), BorderLayout.CENTER);
-		userList.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if(SwingUtilities.isRightMouseButton(e))
-					;
-				
-			}
-		});
 	}
 	
 	public void setUsers(List<User> users) {
@@ -60,10 +61,15 @@ public class ChannelUsers extends JPanel {
 		return users;
 	}
 	
+	public JList getUserList() {  // Returns graphical user list.
+		return this.userList;
+	}
+	
 	public void addUser(User user) {
 		users.add(user);
 		Collections.sort(users);
 		userListModel.add(users.indexOf(user), user.getName());
+		updateUI();
 	}
 	
 	public void removeUser(String nick) {
@@ -72,6 +78,7 @@ public class ChannelUsers extends JPanel {
 			
 			users.remove(index);
 			userListModel.remove(index);
+			updateUI();
 		}
 	}
 	

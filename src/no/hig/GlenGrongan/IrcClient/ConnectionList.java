@@ -7,6 +7,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -41,7 +44,11 @@ public class ConnectionList extends JPanel{
 	List<ServerInformation> knownServerInformation = new ArrayList<ServerInformation>();
 	List<ChatWindow> knownChatWindows = new ArrayList<ChatWindow>();
 	
+	Preferences pref;
+	ResourceBundle res;
 	public ConnectionList(ConnectionManager conMan){
+		pref = Preferences.userNodeForPackage( getClass() );
+		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
 		setLayout(new BorderLayout());
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
@@ -52,7 +59,7 @@ public class ConnectionList extends JPanel{
 	
 	private JPanel createListPanel() {
 		JPanel layout = new JPanel();
-		top = new DefaultMutableTreeNode("IRC servers");
+		top = new DefaultMutableTreeNode(res.getString("IrcClientconList.Tree.top"));
 		conTree = new JTree(top);
 		conTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		
