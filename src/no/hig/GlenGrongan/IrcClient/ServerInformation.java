@@ -57,7 +57,7 @@ class ServerInformation extends JPanel{
 		channelList = new JList();
 		channelListModel = new DefaultListModel();
 		channelList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		channelList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		channelList.setLayoutOrientation(JList.VERTICAL_WRAP);
 		
 		JPanel searchPanel = new JPanel();
 		searchPanel.setLayout(new BorderLayout());

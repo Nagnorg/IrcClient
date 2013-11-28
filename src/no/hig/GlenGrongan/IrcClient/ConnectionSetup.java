@@ -200,6 +200,8 @@ public class ConnectionSetup implements IRCEventListener{
 			if(isMe(pe.getUserName(), pe.getWho())){
 				System.out.println("Im here");
 				connectionList.removeChannelNode(session.getConnectedHostName(), pe.getChannelName(), ccWindow);
+				chatWindow.remove(ccWindow);
+				ccWindow.dispose();
 			}
 			else{
 				((ChannelChat)ccWindow).getUserList().removeUser(pe.getWho());		// Updates user list

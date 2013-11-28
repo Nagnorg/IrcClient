@@ -144,6 +144,7 @@ public class ConnectionList extends JPanel{
 	 */
 	public void removeServerNode(String serverName, ServerInformation si){
 		serverNodes.remove(getIndex(serverName, serverNodes));
+		serverNodes.remove(serverName);
 		knownServerInformation.remove(si);
 		conTree.updateUI();
 	}
@@ -154,11 +155,8 @@ public class ConnectionList extends JPanel{
 	 * @param cw chatwindow belonging to parted channel/private chat
 	 */
 	public void removeChannelNode(String serverName, String channelName, ChatWindow cw){
-		int index1 = getIndex(serverName, serverNodes);
-		System.out.println(index1);
-		int index2 = getIndex(channelName, channelNodes);
-		System.out.println(index2);
-		serverNodes.get(index1).remove(channelNodes.get(index2));
+		serverNodes.get(getIndex(serverName, serverNodes)).remove(channelNodes.get(getIndex(channelName, channelNodes)));
+		channelNodes.remove(channelName);
 		knownChatWindows.remove(cw);
 		updateUI();
 	}

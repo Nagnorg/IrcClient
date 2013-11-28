@@ -1,12 +1,14 @@
 package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -24,6 +26,10 @@ public class ChannelChat extends ChatWindow{
 	}
 	public ChannelChat(Channel c){
 		super(c.getSession().getConnectedHostName(), c.getName());
+		
+		setSize (pref.getInt("window width", 700), pref.getInt("window height", 400));
+		setLocation (pref.getInt("window x pos", 100), pref.getInt("window y pos", 100));
+		
 		channel = c;
 		sendButton.addActionListener(new sendEvent());
 		inText.addActionListener(new sendEvent());
@@ -34,7 +40,21 @@ public class ChannelChat extends ChatWindow{
 		userList.getUserList().addMouseListener(popupListener);
 
 		setVisible(true);
-		setSize(500,300);
+		
+		addWindowListener(new java.awt.event.WindowAdapter() {
+    		@Override
+    		public void windowClosing(WindowEvent e) {
+    			channel.part("");
+    			
+    			// Saves the preferences of the workspace window.
+    			Dimension d = getSize();
+    			Point p = getLocation();
+    			pref.putInt("chatwindow.width", d.width);
+   				pref.putInt("chatwindow.height", d.height);
+   				pref.putInt("chatwindow.x pos", p.x);
+   				pref.putInt("chatwindow.y pos", p.y);
+   			} 
+    	});
 		
 	}
 	

@@ -2,6 +2,7 @@ package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -44,6 +45,8 @@ public class ChannelUsers extends JPanel {
 	
 	public void createLayout() {
 		setLayout(new BorderLayout());
+		setMinimumSize(new Dimension(100,200));
+		setMaximumSize(new Dimension(100, 200));
 		userListModel = new DefaultListModel();
 		for(User usersInstance : users) userListModel.addElement(usersInstance.getName());
 		userList = new JList(userListModel);
