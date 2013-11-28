@@ -84,59 +84,6 @@ import java.util.List;
 		pref = Preferences.userNodeForPackage( getClass() );
 		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
 		
-		// Handles the creation of new servers
-		addButton.addActionListener(
-				new ActionListener(){
-					// TODO: String resources
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						String name = JOptionPane.showInputDialog(null, "Provide a name for the new channel", "Add name", JOptionPane.PLAIN_MESSAGE);
-						if(name.matches(".*\\w+\\.[\\w-]+\\.\\w+.*")) {
-							editXML(name, "Add");
-							serverList = new ConnectOptionsModel(loadXML());
-							serverChosen.setModel(serverList);
-						}
-						else JOptionPane.showMessageDialog(null, "The name you provided does not appear to be a server name");
-					}	
-				});
-		
-		// Handles the editing of current servers
-		editButton.addActionListener(
-				new ActionListener(){
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if(networkList.getSelectedIndex() == 0) {
-							String oldName = serverList.getSelectedItem();
-							String newName = JOptionPane.showInputDialog(null, "Provide a new name for the " +oldName, "Edit name", JOptionPane.PLAIN_MESSAGE);
-							if(newName.matches(".*\\w+\\.[\\w-]+\\.\\w+.*")) {
-								editXML(oldName, newName);
-								serverList = new ConnectOptionsModel(loadXML());
-								serverChosen.setModel(serverList);
-							}
-							else JOptionPane.showMessageDialog(null, "The name you provided does not appear to be a server name");
-						} else JOptionPane.showMessageDialog(null, "You can only change the name of servers on your favorites list");
-					}
-				});
-		
-		// Handles the deletion of current servers
-		removeButton.addActionListener(
-				new ActionListener(){
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if(networkList.getSelectedIndex() == 0) {
-							String name = serverList.getSelectedItem();
-							if(JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " +name+ "?", "Accept?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-								editXML(name, "Remove");
-								serverList = new ConnectOptionsModel(loadXML());
-								serverChosen.setModel(serverList);	
-							}
-							
-						} else JOptionPane.showMessageDialog(null, "You can only remove the servers on your favorites list");
-					}
-				});
-		
 		// Initializes network and server list
 		// Network list retrieves a list of names from the servers.ini file
 		// Servers are added from the xml file, assuming that the user wants his custom options presented to him first
@@ -210,7 +157,7 @@ import java.util.List;
 		layout.setConstraints(connectButton, gbc);
 		add(connectButton);
 		
-		addButton = new JButton(res.getString("IrcClientConnectOption.addButton"));
+		addButton = new JButton(res.getString("IrcClientConnectOption.addButton.label"));
 		gbc.gridx = 6;
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
@@ -220,7 +167,7 @@ import java.util.List;
 		layout.setConstraints(addButton, gbc);
 		add(addButton);
 		
-		editButton = new JButton(res.getString("IrcClientConnectOption.editButton"));
+		editButton = new JButton(res.getString("IrcClientConnectOption.editButton.label"));
 		gbc.gridx = 6;
 		gbc.gridy = 2;
 		gbc.gridwidth = 1;
@@ -230,7 +177,7 @@ import java.util.List;
 		layout.setConstraints(editButton, gbc);
 		add(editButton);
 		
-		removeButton = new JButton(res.getString("IrcClientConnectOption.removeButton"));
+		removeButton = new JButton(res.getString("IrcClientConnectOption.removeButton.label"));
 		gbc.gridx = 6;
 		gbc.gridy = 3;
 		gbc.gridwidth = 1;
@@ -239,15 +186,6 @@ import java.util.List;
 		gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		layout.setConstraints(removeButton, gbc);
 		add(removeButton);
-
-		/*gbc.gridx = 6;
-		gbc.gridy = 4;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.anchor = java.awt.GridBagConstraints.CENTER;
-		gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		layout.setConstraints(sortButton, gbc);
-		add(sortButton);*/
 		
 		label2 = new JLabel(res.getString("IrcClientConnectOption.nameLabel"));
 		gbc.gridx = 1;
@@ -353,13 +291,13 @@ import java.util.List;
 							// TODO: String resources
 							@Override
 							public void actionPerformed(ActionEvent e) {
-								String name = JOptionPane.showInputDialog(null, "Provide a name for the new channel", "Add name", JOptionPane.PLAIN_MESSAGE);
+								String name = JOptionPane.showInputDialog(null, (res.getString("IrcClientConnectOption.addButton.dialogContent")), (res.getString("IrcClientConnectOption.addButton.dialogHeader")), JOptionPane.PLAIN_MESSAGE);
 								if(name.matches(".*\\w+\\.[\\w-]+\\.\\w+.*")) {
 									editXML(name, "Add");
 									serverList = new ConnectOptionsModel(loadXML());
 									serverChosen.setModel(serverList);
 								}
-								else JOptionPane.showMessageDialog(null, "The name you provided does not appear to be a server name");
+								else JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.addButton.dialogIncorrectInput")));
 							}	
 						});
 				
@@ -371,14 +309,14 @@ import java.util.List;
 							public void actionPerformed(ActionEvent e) {
 								if(networkList.getSelectedIndex() == 0) {
 									String oldName = serverList.getSelectedItem();
-									String newName = JOptionPane.showInputDialog(null, "Provide a new name for the " +oldName, "Edit name", JOptionPane.PLAIN_MESSAGE);
+									String newName = JOptionPane.showInputDialog(null, (res.getString("IrcClientConnectOption.editButton.dialogContent")) +oldName+ ".", (res.getString("IrcClientConnectOption.editButton.dialogHeader")), JOptionPane.PLAIN_MESSAGE);
 									if(newName.matches(".*\\w+\\.[\\w-]+\\.\\w+.*")) {
 										editXML(oldName, newName);
 										serverList = new ConnectOptionsModel(loadXML());
 										serverChosen.setModel(serverList);
 									}
-									else JOptionPane.showMessageDialog(null, "The name you provided does not appear to be a server name");
-								} else JOptionPane.showMessageDialog(null, "You can only change the name of servers on your favorites list");
+									else JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.editButton.dialogMissingServer")));
+								} else JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.editButton.dialogIncorrectInput")));
 							}
 						});
 				
@@ -390,13 +328,13 @@ import java.util.List;
 							public void actionPerformed(ActionEvent e) {
 								if(networkList.getSelectedIndex() == 0) {
 									String name = serverList.getSelectedItem();
-									if(JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " +name, "Accept?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+									if(JOptionPane.showConfirmDialog(null, (res.getString("IrcClientConnectOption.removeButton.dialogContent")) +name+ "?", (res.getString("IrcClientConnectOption.removeButton.dialogHeader")), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 										editXML(name, "Remove");
 										serverList = new ConnectOptionsModel(loadXML());
 										serverChosen.setModel(serverList);	
 									}
 									
-								} else JOptionPane.showMessageDialog(null, "You can only remove the servers on your favorites list");
+								} else JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.removeButton.dialogMissingServer")));
 							}
 						});
 				
@@ -532,15 +470,13 @@ import java.util.List;
 				
 			}
 			catch(IOException e){
-				JOptionPane.showMessageDialog(null, "An error occured while attempting to read a file.");
+				JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.IO")));
 			}
 			
 		} catch(FileNotFoundException fnfe) { 
-			System.err.println("Specified file not found"); 
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.FileNotFound")));
 		}
-		
-		// TODO: String manipulation
-		if(elements.size() > 0 && name == null) elements.add(0, "Favorites");
+		if(elements.size() > 0 && name == null) elements.add(0, (res.getString("IrcClientConnectOption.favorite")));
 		return elements;
 	}
 	
@@ -568,11 +504,11 @@ import java.util.List;
 				}
 			}
 		} catch (ParserConfigurationException e) {
-			
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.ParserConfiguration")));
 		} catch (SAXException e) {
-			
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.SAX")));
 		} catch (IOException e) {
-			
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.IOException")));
 		}
 		return servers;
 	}
@@ -621,15 +557,15 @@ import java.util.List;
 			transformer.transform(source, result);
 			
 		} catch (ParserConfigurationException e) {
-			
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.ParserConfiguration")));
 		} catch (TransformerConfigurationException e) {
-			
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.TransformerConfiguration")));
 		} catch (TransformerException e) {
-			
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.Transformer")));
 		} catch (SAXException e) {
-			
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.SAX")));
 		} catch (IOException e) {
-			
+			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.IO")));
 		}
 	}
 }
