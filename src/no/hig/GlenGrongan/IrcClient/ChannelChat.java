@@ -125,13 +125,22 @@ public class ChannelChat extends ChatWindow{
 				if(message.startsWith("/")){
 					String[] command = message.split(" ", 2);
 					switch(command[0].toLowerCase()){
-						case "/join" : channel.getSession().join(command[1]); break;
-						case "/part": channel.part(command[1]); break;
-						case "/away": if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway(); break;
+						case "/join":	if(command.length == 2)channel.getSession().join(command[1]); 
+										else outText.errorMessage("Not enough parameters"); break;
+						case "/part":	if(command.length == 2)channel.part(command[1]);  break;
+						case "/away":	if(command.length <= 2)if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway(); break;
 						case "/me": 
-						case "/action": channel.action(command[1]); break;
-						case "/nick":
-						case "/changenick": channel.getSession().changeNick(command[1]); break;
+						case "/action":	channel.action(command[1]); break;
+						case "/changenick":
+						case "/nick":	channel.getSession().changeNick(command[1]); break;
+						case "/devoice":
+						case "/mute": 	break;
+						case "/invite":	break;
+						case "/modes": 	break;
+						case "/setmode":
+						case "/mode": 	break;
+						case "/msg": 	if(command.length == 3) channel.getSession().sayPrivate(command[1], command[2]);
+									 	else outText.errorMessage("Not enough parameters"); break; 
 						default : outText.recieveMessage(res.getString("IrcClientChannelChat.popupMenu.whoItem"), "Error"); break;
 					}
 				}

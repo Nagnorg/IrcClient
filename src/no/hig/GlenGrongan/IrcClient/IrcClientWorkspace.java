@@ -10,6 +10,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.prefs.Preferences;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -59,6 +60,7 @@ public class IrcClientWorkspace extends JFrame{
 	    		@Override
 	    		public void windowClosing(WindowEvent e) {
 	    			if(conManager != null) conManager.quit();
+	    			
 	    			// Saves the preferences of the workspace window.
 	    			Dimension d = getSize();
 	    			Point p = getLocation();
@@ -72,9 +74,9 @@ public class IrcClientWorkspace extends JFrame{
 	}
 
 	private JToolBar createToolbar(){
-		JButton newConnection = new JButton("New Connection");
-		JButton removeConnection = new JButton ("Remove Connection");
-		JButton customWindow = new JButton("Customize");
+		JButton newConnection = new JButton(new ImageIcon(getClass().getResource("/images/toolbar/newConnection.png")));
+		JButton removeConnection = new JButton (new ImageIcon(getClass().getResource("/images/toolbar/removeConnection.png")));
+		JButton customWindow = new JButton(new ImageIcon(getClass().getResource("/images/toolbar/customizeEvents.png")));
 		
 		JToolBar toolbar = new JToolBar();
 		toolbar.add(newConnection);
@@ -82,23 +84,16 @@ public class IrcClientWorkspace extends JFrame{
 		toolbar.add(customWindow);
 		
 		newConnection.addActionListener(new NewConnection());
+		removeConnection.addActionListener(new RemoveConnection());
 		customWindow.addActionListener(new Customize());
 		return toolbar;
 		
 	}
 	
 	private void createMenu(){}
-
-	class Customize implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			EventCustomizer customizer = new EventCustomizer();	
-			customizer.pack();
-			customizer.setVisible(true);
-		}
-		
-	}
+	
+	
+	
 	class NewConnection implements ActionListener{
 
 		@Override
@@ -118,6 +113,7 @@ public class IrcClientWorkspace extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			Profile profile = null;
 			String userName = cOptions.getInsertName().getText();
 			String nickName = cOptions.getInsertNick().getText();
 			String altNick1 = cOptions.getInsertAlt1().getText();
@@ -125,15 +121,39 @@ public class IrcClientWorkspace extends JFrame{
 			
 			if(conManager == null)
 			{
-				conManager = new ConnectionManager(new Profile(userName, nickName, altNick1, altNick2));
+				conManager = new ConnectionManager(profile = new Profile(userName, nickName, altNick1, altNick2));
 				pref.put("profile.userName", userName);
 				pref.put("profile.nickname", nickName);
 				pref.put("profile.alt1", altNick1);
 				pref.put("profile.alt2", altNick2);
 			}
-			new ConnectionSetup(((String)cOptions.getserverChosen().getSelectedItem()), conManager, connectionList);
-			connectionList.setConManager(conManager);
-			cOptions.dispose();
+			if(conManager != null){
+				new ConnectionSetup(((String)cOptions.getserverChosen().getSelectedItem()), conManager, profile, connectionList);
+				connectionList.setConManager(conManager);
+				cOptions.dispose();
+			}
+		}
+	}
+	class RemoveConnection implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String server = connectionList.getInfoPanel().getSession().getConnectedHostName();
+			if(conManager.getSession(server) != null){
+				connectionList.removeServerNode(server, connectionList.getInfoPanel());
+				conManager.getSession(server).close("Disconnected");
+			}
+			
+		}
+		
+	}
+	class Customize implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			EventCustomizer customizer = new EventCustomizer();	
+			customizer.pack();
+			customizer.setVisible(true);
 		}
 		
 	}

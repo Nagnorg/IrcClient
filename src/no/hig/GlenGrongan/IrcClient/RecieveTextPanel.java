@@ -36,7 +36,7 @@ class RecieveTextPanel extends JPanel{
 		
 		try {
 			// add the text to the document
-			text.getStyledDocument().insertString(pos, message+"/n", sas);
+			text.getStyledDocument().insertString(pos, "\n"+message, sas);
 		} catch (BadLocationException ble) {
 			ble.printStackTrace();
 		}
@@ -48,5 +48,9 @@ class RecieveTextPanel extends JPanel{
 	        	scrollbar.setValue (scrollbar.getMaximum());
 	        }
 	    });
+	}
+	public void errorMessage(String string) {
+		recieveMessage(string, "Error");
+		
 	}
 }

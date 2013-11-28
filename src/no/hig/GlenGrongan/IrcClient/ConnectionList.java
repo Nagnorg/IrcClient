@@ -46,9 +46,11 @@ public class ConnectionList extends JPanel{
 	
 	Preferences pref;
 	ResourceBundle res;
+	
 	public ConnectionList(ConnectionManager conMan){
 		pref = Preferences.userNodeForPackage( getClass() );
 		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
+		
 		setLayout(new BorderLayout());
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
@@ -72,7 +74,7 @@ public class ConnectionList extends JPanel{
                         conTree.getLastSelectedPathComponent();
 		        if (node == null) return;
 		        Object nodeInfo = node.getUserObject();
-		        if(node.getLevel() == 2){
+		        if(node.getLevel() == 2){	// If channelnodes
 		        	for(ChatWindow instance : knownChatWindows){
 		        		if(((ChannelChat)instance).getChannel().getName() == (String) nodeInfo){
 		        			if(instance.getState() == instance.ICONIFIED){
@@ -84,47 +86,94 @@ public class ConnectionList extends JPanel{
 		        	}
 		        	changeInformationPanel((String)((DefaultMutableTreeNode) node.getParent()).getUserObject());
 
-		        }
+		        }	// If server node
 		        else if(node.getLevel() == 1){
 		        	changeInformationPanel((String) nodeInfo);
 		        }
 				conTree.clearSelection();
-			}
-
-			private void changeInformationPanel(String nodeString) {
-	        	for(ServerInformation instance : knownServerInformation){
-	        		if(instance.getSession().getConnectedHostName() == nodeString){
-	        			if(instance != informationPanel){
-	        				mainPanel.remove(informationPanel);
-	        				informationPanel = instance;
-	    		        	mainPanel.add(informationPanel, BorderLayout.CENTER);
-	    		        	informationPanel.updateUI();
-	        			}
-	        		}
-	        	}
-				
 			}
 			
 		});
 		layout.add(new JScrollPane(conTree), BorderLayout.NORTH);
 		return layout;
 	}
+	private void changeInformationPanel(String newInfo) {
+		ServerInformation newPanel = null;
+			for(ServerInformation instance : knownServerInformation){
+				if(instance.getSession().getConnectedHostName().equals(newInfo)){
+					if(instance != informationPanel){
+						newPanel = instance;
+					}
+				}
+			}
+		if(newPanel == null) newPanel = knownServerInformation.get(0);
+		mainPanel.remove(informationPanel);
+		informationPanel = newPanel;
+		mainPanel.add(informationPanel, BorderLayout.CENTER);
+		informationPanel.updateUI();
+		
+	}
 	
+	/**
+	 * Adds a new servernode when user connects to new server.
+	 * @param serverName name of the recently added server.
+	 * @param si recently added server information
+	 */
 	public void addServerNode(String serverName, ServerInformation si){
 		serverNodes.add(new DefaultMutableTreeNode(serverName));
 		knownServerInformation.add(si);
 		top.add(serverNodes.get(serverNodes.size()-1));
 		conTree.updateUI();
 	}
+	/**
+	 * Adds a new channelnode user joins new channel is.
+	 * @param serverName name of server the channel belongs
+	 * @param channelName name of recently added channel
+	 * @param cw recently added chatwindow
+	 */
 	public void addChannelNode(String serverName, String channelName, ChatWindow cw){
-		int index = 0;
-		for(int i = 0; i<conManager.getSessions().size(); i++){
-			if(conManager.getSessions().get(i).getConnectedHostName() == serverName) index = (conManager.getSessions().size()-1)-i;
-		}
 		channelNodes.add(new DefaultMutableTreeNode(channelName));
 		knownChatWindows.add(cw);
-		serverNodes.get(index).add(channelNodes.get(channelNodes.size()-1));
+		serverNodes.get(getIndex(serverName, serverNodes)).add(channelNodes.get(channelNodes.size()-1));
 		conTree.updateUI();
+	}
+	/**
+	 * Removes a server node when the user quits the server
+	 * @param serverName server to quit.
+	 * @param si information of server to quit.
+	 */
+	public void removeServerNode(String serverName, ServerInformation si){
+		serverNodes.remove(getIndex(serverName, serverNodes));
+		knownServerInformation.remove(si);
+		conTree.updateUI();
+	}
+	/**
+	 * Removes a channelnode when user parts a channel.
+	 * @param serverName name of server the channel belongs
+	 * @param channelName name of parted channel/private chat
+	 * @param cw chatwindow belonging to parted channel/private chat
+	 */
+	public void removeChannelNode(String serverName, String channelName, ChatWindow cw){
+		int index1 = getIndex(serverName, serverNodes);
+		System.out.println(index1);
+		int index2 = getIndex(channelName, channelNodes);
+		System.out.println(index2);
+		serverNodes.get(index1).remove(channelNodes.get(index2));
+		knownChatWindows.remove(cw);
+		updateUI();
+	}
+	/**
+	 * Finds the index of a DefaultMutableTreeNode object in a list, based on its userobject and sent name
+	 * @param findName name of object wanted
+	 * @param list object to search through
+	 * @return index of String, -1 if it's not found.
+	 */
+	private int getIndex(String findName, List list){
+		int index = -1;
+		for(int i = 0; i<list.size(); i++){
+			if(((DefaultMutableTreeNode) list.get(i)).getUserObject().equals(findName)) index = i;
+		}
+		return index;
 	}
 	/**
 	 * @return The root node
@@ -150,6 +199,13 @@ public class ConnectionList extends JPanel{
 	 */
 	public void setConManager(ConnectionManager conManager) {
 		this.conManager = conManager;
+	}
+	/**
+	 * Returns the currently selected server.
+	 * @return
+	 */
+	public ServerInformation getInfoPanel(){
+		return informationPanel;
 	}
 
 }

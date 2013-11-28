@@ -48,7 +48,7 @@ public class ChannelUsers extends JPanel {
 		for(User usersInstance : users) userListModel.addElement(usersInstance.getName());
 		userList = new JList(userListModel);
 		userList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		userList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		userList.setLayoutOrientation(JList.VERTICAL_WRAP);
 		
 		add(userListScroller = new JScrollPane(userList), BorderLayout.CENTER);
 	}

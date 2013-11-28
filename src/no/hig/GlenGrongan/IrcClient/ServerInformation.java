@@ -43,10 +43,11 @@ class ServerInformation extends JPanel{
 	public ServerInformation(){
 		pref = Preferences.userNodeForPackage( getClass() );
 		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
+		
 		setLayout(new BorderLayout());
 		add(serverText = new RecieveTextPanel(), BorderLayout.CENTER);
-		
 		add(channelListPanel = createChannelListPanel(), BorderLayout.EAST);
+		session = null;
 	}
 	
 	private JPanel createChannelListPanel() {
