@@ -48,7 +48,7 @@ import jerklib.listeners.IRCEventListener;
 
 public class ConnectionSetup implements IRCEventListener{
 	Session session;// Easy access session for this listener.
-	List<ChannelChat> chatWindow = new ArrayList<ChannelChat>();// List with Channelchat windows, one for each channel part of session
+	List<ChatWindow> chatWindow = new ArrayList<ChatWindow>();// List with Channelchat windows, one for each channel part of session
 	ConnectionList connectionList;			
 	ServerInformation information;
 	Profile myProfile;
@@ -141,13 +141,13 @@ public class ConnectionSetup implements IRCEventListener{
 			JoinEvent je = (JoinEvent) e;
 			User user = new User(je.getNick(), je.getChannel());
 			
-			chatWindow.get((session.getChannels().size())-1).getUserList().addUser(user);
+			((ChannelChat)chatWindow.get((session.getChannels().size())-1)).getUserList().addUser(user);
 		}
 		else if(e.getType() == Type.JOIN_COMPLETE)
 		{
 			JoinCompleteEvent jce = (JoinCompleteEvent)e;
 			chatWindow.add(new ChannelChat(jce.getChannel()));
-			ChannelChat ccObject = chatWindow.get((session.getChannels().size())-1); // Newest chat window
+			ChannelChat ccObject = (ChannelChat) chatWindow.get((session.getChannels().size())-1); // Newest chat window
 			connectionList.addChannelNode(session.getConnectedHostName(), jce.getChannel().getName(),ccObject);
 			message = res.getString("IrcClientConnectionSetup.youJoinedMessage") + jce.getChannel().getName();
 			information.getServerText().recieveMessage(message, "JoinComplete");
@@ -220,10 +220,25 @@ public class ConnectionSetup implements IRCEventListener{
 				ccWindow.getOutText().recieveMessage(message, "Part");
 			}
 		}
+		else if(e.getType()==Type.PRIVATE_MESSAGE){
+			MessageEvent me = (MessageEvent) e;
+			UserChat ccWindow;
+			int index = (findIndex(me.getUserName()));
+			//If Chatwindow doesn't exist.
+			if(index==-1){
+				chatWindow.add(ccWindow = new UserChat(session.getConnectedHostName(), me.getUserName()));
+				message = res.getString("IrcClientConnectionSetup.privateChatStart")+" "+me.getUserName();
+				ccWindow.getOutText().recieveMessage(message, "Message");
+			}
+			else ccWindow = (UserChat) chatWindow.get(index);
+			message = "<" + me.getNick() + ">: " + me.getMessage();
+			// writes message in the window belonging to the channel that recieved the message.
+			ccWindow.getOutText().recieveMessage(message, "Message");
+		}
 		else if(e.getType() == Type.QUIT) {
 			QuitEvent qe = (QuitEvent) e;
 			for(Channel channelInstance : qe.getChannelList()){
-				chatWindow.get(findIndex(channelInstance.getName())).getUserList().removeUser(qe.getNick());
+				((ChannelChat)chatWindow.get(findIndex(channelInstance.getName()))).getUserList().removeUser(qe.getNick());
 			}
 		}
 		else if(e.getType()==Type.SERVER_INFORMATION){
@@ -254,16 +269,18 @@ public class ConnectionSetup implements IRCEventListener{
 	 * @param channelName
 	 * @return The index of the chatWindow, 0 if it doesn't exist.
 	 */
-	private int findIndex(String channelName){
+	private int findIndex(String name){
 		for(int i = 0; i < chatWindow.size(); i++){
-			if(chatWindow.get(i).getChannel().getName() == channelName) return i;
+			if(chatWindow.get(i) instanceof ChannelChat){
+				if(((ChannelChat)chatWindow.get(i)).getChannel().getName().equals(name)) return i;
+			}
+			else if(((UserChat)chatWindow.get(i)).getUserName().equals(name)) return i;
 		}
-		return 0;
+		return -1;
 		
 	}
 	
 	private boolean isMe(String name, String nick){
-		System.out.println(myProfile.getName()+" "+myProfile.getActualNick()+":"+name+" "+nick);
 		if(name.matches("~"+myProfile.getName())){
 			return true;
 		}
