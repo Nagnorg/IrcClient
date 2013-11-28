@@ -354,6 +354,8 @@ import java.util.List;
 								} else JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.removeButton.dialogMissingServer")));
 							}
 						});
+				
+				// Handles the creation of mirc's servers.ini file
 				mircButton.addActionListener(
 						new ActionListener(){
 
@@ -365,6 +367,8 @@ import java.util.List;
 									networkChosen.setModel(networkList);
 									serverList = new ConnectOptionsModel(loadXML());
 									serverChosen.setModel(serverList);
+									// Provides some feedback that the dropdown boxes have been updated
+									JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.update.finished")));
 								}
 							}
 							
@@ -599,6 +603,10 @@ import java.util.List;
 		}
 	}
 	
+	/**
+	 * Takes the .ini file from mirc's website and stores it locally
+	 * Content in large taken from http://www.mkyong.com/java/how-to-get-url-content-in-java/
+	 */
 	public void updateIniFile() {
 		try {
 			URL url = new URL("http://www.mirc.com/servers.ini");
@@ -621,7 +629,6 @@ import java.util.List;
 		    writer.close();
 		    reader.close();
 		    
-		    JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.update.finished")));
 		} catch (MalformedURLException e) {
 			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.MalformedURL")));
 		} catch (IOException e) {
