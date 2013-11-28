@@ -475,7 +475,7 @@ import java.util.List;
 		} catch(FileNotFoundException fnfe) { 
 			JOptionPane.showMessageDialog(null, (res.getString("IrcClientConnectOption.exception.FileNotFound")));
 		}
-		if(elements.size() > 0 && name == null) elements.add(0, (res.getString("IrcClientConnectOption.favorite")));
+		if(elements.size() > 0 && name == null) elements.add(0, (res.getString("IrcClientConnectOptions.favorite")));
 		return elements;
 	}
 	

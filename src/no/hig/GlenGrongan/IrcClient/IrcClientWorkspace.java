@@ -44,6 +44,7 @@ public class IrcClientWorkspace extends JFrame{
 	ConnectOptions cOptions;
 	ConnectionManager conManager;
 	ServerInformation informationPanel;
+	Profile profile;
 	
 	Preferences pref;
 	ResourceBundle res;
@@ -132,7 +133,6 @@ public class IrcClientWorkspace extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Profile profile = null;
 			String userName = cOptions.getInsertName().getText();
 			String nickName = cOptions.getInsertNick().getText();
 			String altNick1 = cOptions.getInsertAlt1().getText();

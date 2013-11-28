@@ -146,7 +146,8 @@ public class ChannelChat extends ChatWindow{
 					switch(command[0].toLowerCase()){
 						case "/join":	if(command.length == 2)channel.getSession().join(command[1]); 
 										else outText.errorMessage("Not enough parameters"); break;
-						case "/part":	if(command.length == 2)channel.part(command[1]);  break;
+						case "/part":	if(command.length >= 2)channel.part(command[1]); 
+										else channel.part(""); break;
 						case "/away":	if(command.length <= 2)if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway(); break;
 						case "/me": 
 						case "/action":	channel.action(command[1]); break;
@@ -158,7 +159,11 @@ public class ChannelChat extends ChatWindow{
 						case "/modes": 	break;
 						case "/setmode":
 						case "/mode": 	break;
-						case "/msg": 	if(command.length == 3) channel.getSession().sayPrivate(command[1], command[2]);
+						case "/msg": 	if(command.length == 2){
+											String[] parameter = command[1].split(" ", 2);
+											if(parameter.length == 2) channel.getSession().sayPrivate(parameter[0], parameter[1]);
+											else outText.errorMessage("Not enough parameters");
+										}
 									 	else outText.errorMessage("Not enough parameters"); break; 
 						case "/private":if(command.length == 2) channel.getSession().sayPrivate(myNick, command[1]);
 					 					else outText.errorMessage("Not enough parameters"); break; 
