@@ -525,7 +525,7 @@ import java.util.List;
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse("src/favorites.xml");
+			Document document = builder.parse("favorites.xml");
 			NodeList nodeList = document.getDocumentElement().getChildNodes();
 			
 			// Iterates through the address elements containing the string values
@@ -556,7 +556,7 @@ import java.util.List;
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse("src/favorites.xml");
+			Document document = builder.parse("favorites.xml");
 			document.getDocumentElement().normalize();
 			Node servers = document.getElementsByTagName("servers").item(0);
 			
@@ -586,7 +586,7 @@ import java.util.List;
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(document);
-			File file = new File("src/favorites.xml");
+			File file = new File("favorites.xml");
 			StreamResult result = new StreamResult(file);
 			transformer.transform(source, result);
 			
