@@ -154,9 +154,14 @@ public class ConnectionSetup implements IRCEventListener{
 				message = message + res.getString("IrcClientConnectionSetup.topicMessage") + jce.getChannel().getTopic();
 			}
 			ccObject.getOutText().recieveMessage(message, "Topic"); // Writes servertopic
-			
+
 			List<User> nicks = new ArrayList<User>();
-			for(String  nick : ccObject.getChannel().getNicks()) {
+			List<String> channels = null;
+			while((channels = ccObject.getChannel().getNicks()) == null) {
+				waiting(500);
+			}
+			
+			for(String  nick : channels) {
 				nicks.add(new User(nick, ccObject.getChannel()));
 			}
 			
@@ -338,6 +343,19 @@ public class ConnectionSetup implements IRCEventListener{
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Stalls the system by looping until a given number is reached
+	 * Taken from http://hig-irc.googlecode.com/svn/trunk/src/src/irc/model/ConnectModel.java
+	 * @param timer Milliseconds to wait
+	 */
+	public void waiting (int timer) {
+		long time0, time1;
+		time0 = System.currentTimeMillis();
+		do {
+			time1 = System.currentTimeMillis();
+		} while((time1 - time0) < (timer));
 	}
 	
 }
