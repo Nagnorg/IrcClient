@@ -20,22 +20,22 @@ import javax.swing.ListSelectionModel;
 import jerklib.Session;
 
 /**
- * Panel giving server specific information.
+ * Panel creating and maintaining server specific informations and actions.
  * @version 0.1
  * @author Glen
  *
  */
 class ServerInformation extends JPanel{
-	RecieveTextPanel serverText;
-	JPanel channelListPanel;
+	RecieveTextPanel serverText;	// Panel for writing server information.
+	JPanel channelListPanel;		// Panel containing the possibility to search for channels
 	
-	JList channelList;
-	DefaultListModel channelListModel;
-	JTextField channelSearch;
+	JList channelList;				// List with possibility to contain channels the user specify.
+	DefaultListModel channelListModel;	// List model for the channelList.
+	JTextField channelSearch;		// Area for user to search for channels.
 	JButton channelSearchButton;
 	JButton joinChannelButton;
 	JScrollPane channelListScroller;
-	Session session;
+	Session session;				// Owner of object.
 	
 	Preferences pref;
 	ResourceBundle res;

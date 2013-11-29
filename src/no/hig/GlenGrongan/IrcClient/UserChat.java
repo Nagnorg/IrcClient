@@ -6,7 +6,11 @@ import java.awt.event.WindowEvent;
 
 import jerklib.Session;
 import no.hig.GlenGrongan.IrcClient.ChannelChat.sendEvent;
-
+/**
+ * Class creating and maintaining a chatwindow for private chats.
+ * @author Glen
+ *
+ */
 public class UserChat extends ChatWindow{
 
 	String user;
@@ -25,6 +29,9 @@ public class UserChat extends ChatWindow{
 		
 		setVisible(true);
 	}
+	/**
+	 * @return who the chat is with.
+	 */
 	public String getUserName() {
 		return this.user;
 	}

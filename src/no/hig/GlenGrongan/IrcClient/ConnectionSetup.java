@@ -39,7 +39,7 @@ import jerklib.events.WhowasEvent;
 import jerklib.listeners.IRCEventListener;
 
 /**
- * Class containing a session, and controls the connection to one server.
+ * Class containing listeners for the connected IRC server.
  * @version 0.2
  * @author Glen
  * 
@@ -101,7 +101,6 @@ public class ConnectionSetup implements IRCEventListener{
 			ConnectionCompleteEvent cce = (ConnectionCompleteEvent)e;
 			connectionList.addServerNode(cce.getActualHostName(), information);
 			session.join("#jerklib"); // For testing purposes.
-			//session.chanList();
  
 		}
 		else if(e.getType() == Type.CONNECTION_LOST){
@@ -154,7 +153,7 @@ public class ConnectionSetup implements IRCEventListener{
 			if(jce.getChannel().getTopic() != ""){
 				message = message + res.getString("IrcClientConnectionSetup.topicMessage") + jce.getChannel().getTopic();
 			}
-			ccObject.getOutText().recieveMessage(message, "Topic"); // Writes topic
+			ccObject.getOutText().recieveMessage(message, "Topic"); // Writes servertopic
 			
 			List<User> nicks = new ArrayList<User>();
 			for(String  nick : ccObject.getChannel().getNicks()) {
@@ -167,16 +166,19 @@ public class ConnectionSetup implements IRCEventListener{
 		else if(e.getType()==Type.KICK_EVENT){
 			KickEvent ke = (KickEvent)e;
 			ChatWindow ccWindow = chatWindow.get(findIndex(ke.getChannel().getName()));
+			// if user of program is kicked.
 			if(isMe(ke.getUserName())){
 				connectionList.removeChannelNode(session.getConnectedHostName(), ke.getChannel().getName(), ccWindow);
 				chatWindow.remove(ccWindow);
 				ccWindow.dispose();
 				message = ke.getChannel().getName()+": "+res.getString("IrcClientConnectionSetup.userKicked")+" "+ke.byWho()+
 						". "+res.getString("IrcClientConnectionSetup.kickEventReason")+" "+ke.getMessage();
+				information.getServerText().recieveMessage(message, "Kick");
 			}
 			else{
 			message = ke.getWho()+" "+res.getString("IrcClientConnectionSetup.otherKicked")+" "+ke.byWho()+
 					". "+res.getString("IrcClientConnectionSetup.kickEventReason")+" "+ke.getMessage();
+			ccWindow.getOutText().recieveMessage(message,"Kick");
 			}
 		}
 		else if(e.getType()==Type.MODE_EVENT){

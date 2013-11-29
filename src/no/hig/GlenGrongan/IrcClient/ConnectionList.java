@@ -26,7 +26,9 @@ import jerklib.ConnectionManager;
 import jerklib.Session;
 
 /**
- * @version 0.1
+ * Class for containing and maintaining most of the "global" information. 
+ * Most noteably it maintains the JTree for connections, but it's responsible for switching out the serverinformationpanels as well.
+ * @version 0.2
  * @author Glen
  *
  */
@@ -47,6 +49,9 @@ public class ConnectionList extends JPanel{
 	Preferences pref;
 	ResourceBundle res;
 	
+	/**
+	 * @param conMan the connectionmanager
+	 */
 	public ConnectionList(ConnectionManager conMan){
 		pref = Preferences.userNodeForPackage( getClass() );
 		res =  ResourceBundle.getBundle("IrcClient", new Locale(pref.get("IrcClient.language", "en")));
@@ -97,6 +102,10 @@ public class ConnectionList extends JPanel{
 		layout.add(new JScrollPane(conTree), BorderLayout.NORTH);
 		return layout;
 	}
+	/**
+	 * Changes the active informationpanel.
+	 * @param newInfo name of session owning the new panel.
+	 */
 	private void changeInformationPanel(String newInfo) {
 		ServerInformation newPanel = null;
 			for(ServerInformation instance : knownServerInformation){
@@ -174,7 +183,7 @@ public class ConnectionList extends JPanel{
 		return index;
 	}
 	/**
-	 * @return The root node
+	 * @return The root node of the tree.
 	 */
 	public DefaultMutableTreeNode getTop() {
 		return top;

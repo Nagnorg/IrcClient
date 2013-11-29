@@ -32,19 +32,17 @@ import jerklib.ConnectionManager;
 import jerklib.Profile;
 import jerklib.Session;
 /**
- * Class containing creation of GUI and most of its handling for the IRC client.
+ * Class containing creation of GUI and base functionality for the client.
  * @version 0.2
  * @author Glen & Martin
  *
  */
 public class IrcClientWorkspace extends JFrame{
 	JPanel serverListPanel;
-	ChatWindow chatWindow;
-	ConnectionList connectionList;
-	ConnectOptions cOptions;
+	ConnectionList connectionList;	// The connectionlist of the program.
+	ConnectOptions cOptions;		// A frame for creating a new connection.
 	ConnectionManager conManager;
-	ServerInformation informationPanel;
-	Profile profile;
+	Profile profile;				// Profile of the clientuser.
 	
 	Preferences pref;
 	ResourceBundle res;
@@ -68,10 +66,10 @@ public class IrcClientWorkspace extends JFrame{
 		JMenuBar workspaceMenu = createMenu();
 		
 		
-
 		addWindowListener(new java.awt.event.WindowAdapter() {
 	    		@Override
 	    		public void windowClosing(WindowEvent e) {
+	    			// Exits the connectionmanager
 	    			if(conManager != null) conManager.quit();
 	    			
 	    			// Saves the preferences of the workspace window.
@@ -85,7 +83,7 @@ public class IrcClientWorkspace extends JFrame{
 	    	});
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-
+	// Creates the toolbar for the client.
 	private JToolBar createToolbar(){
 		JButton newConnection = new JButton(new ImageIcon(getClass().getResource("/images/toolbar/newConnection.png")));
 		JButton removeConnection = new JButton (new ImageIcon(getClass().getResource("/images/toolbar/removeConnection.png")));
@@ -102,7 +100,7 @@ public class IrcClientWorkspace extends JFrame{
 		return toolbar;
 		
 	}
-	
+	// Creates the menu for the client.
 	private JMenuBar createMenu(){
 		JMenuItem newConnectionItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.newConnection"));
 		JMenuItem removeConnectionItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.removeConnection"));

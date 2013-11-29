@@ -16,7 +16,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
+/**
+ * Modelclass for comboboxes in ConnectOptions.
+ * @author Glen
+ *
+ */
 public class ConnectOptionsModel implements ComboBoxModel{
 	List<String> elements;
 	String selectedElement;

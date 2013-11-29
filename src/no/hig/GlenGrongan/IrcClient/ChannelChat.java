@@ -15,7 +15,12 @@ import javax.swing.JPopupMenu;
 
 import jerklib.Channel;
 import jerklib.Session;
-
+/**
+ * Class creating and maintaining the chatwindow of a channel. Originally known as chatWindow,
+ * but were later made to inherit from this class instead.
+ * @author Glen
+ *
+ */
 public class ChannelChat extends ChatWindow{
 	Channel channel;
 	ChannelUsers userList;
@@ -82,7 +87,10 @@ public class ChannelChat extends ChatWindow{
 	public ChannelUsers getUserList() {
 		return userList;
 	}
-	
+	/**
+	 * Sets the userlist of the channel, and updates it.
+	 * @param userList a list of users.
+	 */
 	public void setUserList(ChannelUsers userList) {
 		outTextPanel.remove(userList);
 		this.userList = userList;
@@ -133,7 +141,7 @@ public class ChannelChat extends ChatWindow{
 	/**
 	 * 
 	 * Sends message written by user to server.
-	 *
+	 *	Takes text written in inText and handles it based on command/no command.
 	 */
 	class sendEvent implements ActionListener{
 
@@ -144,33 +152,33 @@ public class ChannelChat extends ChatWindow{
 				if(message.startsWith("/")){
 					String[] command = message.split(" ", 2);
 					switch(command[0].toLowerCase()){
-						case "/join":	if(command.length == 2)channel.getSession().join(command[1]); 
+						case "/join":	if(command.length == 2)channel.getSession().join(command[1]);	// joins a channel 
 										else outText.errorMessage("Not enough parameters"); break;
-						case "/part":	if(command.length >= 2)channel.part(command[1]); 
+						case "/part":	if(command.length >= 2)channel.part(command[1]); 	// parts a channel
 										else channel.part(""); break;
 						case "/away":	if(command.length <= 2)if(channel.getSession().isAway()) channel.getSession().setAway(command[1]); else channel.getSession().unsetAway(); break;
 						case "/me": 
-						case "/action":	channel.action(command[1]); break;
+						case "/action":	channel.action(command[1]); break;		// User sends a action if command is /action or /me
 						case "/changenick":
-						case "/nick":	channel.getSession().changeNick(command[1]); break;
+						case "/nick":	channel.getSession().changeNick(command[1]); break;		// User changes nick if command is /nick or /changenick
 						case "/devoice":
 						case "/mute": 	break;
 						case "/invite":	break;
 						case "/modes": 	break;
 						case "/setmode":
 						case "/mode": 	break;
-						case "/msg": 	if(command.length == 2){
+						case "/msg": 	if(command.length == 2){		// Sends a private message to user.
 											String[] parameter = command[1].split(" ", 2);
 											if(parameter.length == 2) channel.getSession().sayPrivate(parameter[0], parameter[1]);
 											else outText.errorMessage("Not enough parameters");
 										}
 									 	else outText.errorMessage("Not enough parameters"); break; 
-						case "/private":if(command.length == 2) channel.getSession().sayPrivate(myNick, command[1]);
+						case "/private":if(command.length == 2) channel.getSession().sayPrivate(myNick, command[1]);	// Opens a chatwindow for privatechat with user.
 					 					else outText.errorMessage("Not enough parameters"); break; 
 						default : outText.recieveMessage(res.getString("IrcClientChannelChat.popupMenu.whoItem"), "Error"); break;
 					}
 				}
-				else{
+				else{	// If no command is written
 					channel.say(message);
 					outText.recieveMessage("<"+myNick+">: "+message, "Message");
 				}
@@ -179,6 +187,11 @@ public class ChannelChat extends ChatWindow{
 		}
 	}
 	
+	/**
+	 * Creates popup for the channeluserlist.
+	 * @author Glen
+	 *
+	 */
 	class PopupListener extends MouseAdapter {
 	    public void mousePressed(MouseEvent e) {
 	    	userList.getUserList().setSelectedIndex(getRow(e.getPoint()));

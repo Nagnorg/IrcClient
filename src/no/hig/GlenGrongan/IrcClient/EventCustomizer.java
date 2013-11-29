@@ -31,7 +31,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
+/**
+ * Class creating the way for updating event fonts, and updates the preferences.
+ * @author Glen
+ *
+ */
 public class EventCustomizer extends JFrame{
 	JPanel listPanel;
 	JList eventList;
@@ -79,12 +83,12 @@ public class EventCustomizer extends JFrame{
 			});
 		eventList.setSelectedIndex(0);
 	}
-	
+	// Creates and fills the panel for the list.
 	private JPanel createListPanel(){
 		JPanel layout = new JPanel();
 		layout.setLayout(new BorderLayout());
 		eventListModel = new DefaultListModel();
-		String[] eventTypes = 
+		String[] eventTypes = //Different possible events.
 	{"Away", "ConnectionComplete", "ConnectionLost", "Error", "Invite", "Information", "Join", "JoinComplete", "Kick", 
 				"Mode", "Motd", "Message", "NickChange", "Notice", "Part", "Quit", "ServerInformation", 
 				"ServerVersion", "Topic", "Who", "Whois", "WhoWas"};
@@ -93,12 +97,12 @@ public class EventCustomizer extends JFrame{
 		}
 		eventList = new JList(eventListModel);
 		eventList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		eventList.setLayoutOrientation(JList.VERTICAL_WRAP);
+		eventList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		
 		layout.add(eventListScroller = new JScrollPane(eventList), BorderLayout.CENTER);
 		return layout;
 	}
-	
+	// Creates and fills the panel containing the fonts and colors for the selected events.
 	private JPanel createTextPanel(){
 		JPanel layout = new JPanel();
 		layout.setLayout(new BorderLayout());
@@ -107,6 +111,7 @@ public class EventCustomizer extends JFrame{
 		previewPanel.add(previewArea = new JTextArea(res.getString("IrcClientEventCustomizer.previewPanel.defText")), BorderLayout.CENTER);
 		JButton setButton = new JButton(res.getString("IrcClientEventCustomizer.previewPanel.setStyle"));
 		previewPanel.add(setButton, BorderLayout.EAST);
+		// Sets the preferences for the selected event as the values in the different fields.
 		setButton.addActionListener(new ActionListener(){
 
 			@Override
@@ -264,9 +269,10 @@ public class EventCustomizer extends JFrame{
 		return layout;
 	}
 	
-	
+
 	public void changePreviewArea(){		// Updates the preview of user edited fonts.
 		Font newFont;
+		// Updates the font
 		if(bold.isSelected()&&italic.isSelected()){
 			newFont = new Font((String) fontOptions.getSelectedItem(), Font.BOLD+Font.ITALIC, ((Integer)fontSize.getValue()));
 		}
@@ -278,6 +284,7 @@ public class EventCustomizer extends JFrame{
 		}
 		else newFont = new Font((String) fontOptions.getSelectedItem(), Font.PLAIN, ((Integer)fontSize.getValue()));
 		previewArea.setFont(newFont);
+		//Updates the colors.
 		previewArea.setForeground(foregroundColor);
 		previewArea.setBackground(backgroundColor);
 	}

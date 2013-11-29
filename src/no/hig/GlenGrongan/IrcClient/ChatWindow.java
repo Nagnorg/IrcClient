@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 
 /**
  * Class containing the shared gui for chat windows.
+ * 
  * @version 0.4
  * @author Glen
  *
@@ -59,14 +60,14 @@ public abstract class ChatWindow extends JFrame{
 	}
 	
 	/**
-	 * @return the textpane
+	 * @return the textpane for text TO the user
 	 */
 	public RecieveTextPanel getOutText() {
 		return outText;
 	}
 
 	/**
-	 * @return the outText
+	 * @return the textfield for text FROM the user
 	 */
 	public JTextField getInText() {
 		return inText;
