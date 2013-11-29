@@ -131,7 +131,27 @@ public class IrcClientWorkspace extends JFrame{
 		});
 		
 		JMenuItem windowHelpItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.windowHelpItem"));
+		windowHelpItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				connectionList.getInfoPanel().getServerText().recieveMessage(res.getString("IrcClient.help.windowLeft"), "Notice");
+				
+			}
+			
+		});
 		JMenuItem commandHelpItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.commandHelpItem"));
+		commandHelpItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for(int i = 1; i <=5; i++){
+					connectionList.getInfoPanel().getServerText().recieveMessage(res.getString("IrcClient.help.command"+i), "Notice");
+				}
+				
+			}
+			
+		});
 		
 		JMenu fileMenu = new JMenu(res.getString("IrcClientWorkspace.menu.file"));
 		fileMenu.setMnemonic('F');

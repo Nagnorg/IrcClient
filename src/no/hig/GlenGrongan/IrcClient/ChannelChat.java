@@ -65,14 +65,42 @@ public class ChannelChat extends ChatWindow{
 	}
 	
 	private void createPopupMenu(){
-		JMenuItem muteItem = new JMenuItem(res.getString("IrcClientChannelChat.popupMenu.muteItem"));
+		/*JMenuItem muteItem = new JMenuItem(res.getString("IrcClientChannelChat.popupMenu.muteItem"));
+		muteItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});*/
 		JMenuItem privateChatItem = new JMenuItem(res.getString("IrcClientChannelChat.popupMenu.priChatItem"));
+		privateChatItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				channel.getSession().sayPrivate(myNick, (String) userList.getUserList().getSelectedValue());
+				
+			}
+			
+		});
 		JMenuItem whoItem = new JMenuItem(res.getString("IrcClientChannelChat.popupMenu.whoItem"));
+		whoItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				channel.getSession().who((String) userList.getUserList().getSelectedValue());
+				
+			}
+			
+		});
 		
 		
 		userInteraction = new JPopupMenu();
-		userInteraction.add(muteItem);
+		//userInteraction.add(muteItem);
 		userInteraction.add(privateChatItem);
+		userInteraction.add(whoItem);
 	}
 	
 	public void setChannel(Channel c){
@@ -102,32 +130,6 @@ public class ChannelChat extends ChatWindow{
 		outTextPanel.updateUI();
 	}
 	
-	// Nicklist commands
-	
-	public void ban(String nick, String type) {
-		// TODO: Add content
-	}
-	
-	public void ctcp() {
-		// TODO: Add content, check parameters
-	}
-	
-	public void invite(String nick, Channel channel) {
-		// TODO: Add content, check resolution
-	}
-	
-	public void kick(String nick) {
-		// TODO: Add content
-	}
-	
-	public void query(String nick, String message) {
-		// TODO: Add content, parameter evaluation
-	}
-	
-	public void who(String nick) {
-		// TODO: Add content
-	}
-	
 	/**
 	 * 
 	 * Sends message written by user to server.
@@ -146,7 +148,7 @@ public class ChannelChat extends ChatWindow{
 										else outText.errorMessage(res.getString("IrcClientChannelChat.incorrectArguments2")); break;
 						case "/part":	if(command.length >= 2)channel.part(command[1]); 	// parts a channel
 										else channel.part(""); break;
-						case "/away":	if(command.length <= 2) 
+						case "/away":	if(command.length == 2) 
 											if(channel.getSession().isAway()) 
 												channel.getSession().setAway(command[1]); 
 										else channel.getSession().unsetAway();
