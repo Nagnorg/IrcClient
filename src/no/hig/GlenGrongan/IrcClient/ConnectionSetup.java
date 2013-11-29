@@ -347,6 +347,7 @@ public class ConnectionSetup implements IRCEventListener{
 	
 	/**
 	 * Stalls the system by looping until a given number is reached
+	 * Taken from http://hig-irc.googlecode.com/svn/trunk/src/src/irc/model/ConnectModel.java
 	 * @param timer Milliseconds to wait
 	 */
 	public void waiting (int timer) {
