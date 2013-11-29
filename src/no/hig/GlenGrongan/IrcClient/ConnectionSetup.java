@@ -77,6 +77,8 @@ public class ConnectionSetup implements IRCEventListener{
 	public void receiveEvent(IRCEvent e)
 	{
 		String message;
+		
+		// Informs when a user stops or starts being away
 		if(e.getType()==Type.AWAY_EVENT){
 			AwayEvent ae = (AwayEvent) e;
 			message = "<"+ae.getNick()+">: "+ae.getAwayMessage();
@@ -89,6 +91,8 @@ public class ConnectionSetup implements IRCEventListener{
 			
 			
 		}
+		
+		// Takes a message and sends it to the correct channel
 		else if(e.getType()== Type.CHANNEL_MESSAGE)
 		{
 			MessageEvent me = (MessageEvent) e;
@@ -96,17 +100,22 @@ public class ConnectionSetup implements IRCEventListener{
 			// writes message in the window belonging to the channel that recieved the message.
 			chatWindow.get(findIndex(me.getChannel().getName())).getOutText().recieveMessage(message, "Message");
 		}
+		
+		// Updates the server tree when a connection is established
 		else if(e.getType() == Type.CONNECT_COMPLETE)
 		{
 			ConnectionCompleteEvent cce = (ConnectionCompleteEvent)e;
 			connectionList.addServerNode(cce.getActualHostName(), information);
-			session.join("#jerklib"); // For testing purposes.
  
 		}
+		
+		// Updates the server tree when a connection is lost
 		else if(e.getType() == Type.CONNECTION_LOST){
 			message = "\n" + res.getString("IrcClientConnectionSetup.lostConnection")+"\n";
 			information.serverText.recieveMessage(message, "ConnectionLost");
 		}
+		
+		// Used here to interpret user actions
 		else if(e.getType()==Type.CTCP_EVENT)
 		{
 			CtcpEvent ctcpe = (CtcpEvent) e;
@@ -114,6 +123,8 @@ public class ConnectionSetup implements IRCEventListener{
 			message = "*" + ctcpe.getNick() + action + "*";
 			chatWindow.get(findIndex(ctcpe.getChannel().getName())).getOutText().recieveMessage(message, "Message");
 		}
+		
+		// Updates the server tree with a provided list of channels
 		else if(e.getType() == Type.CHANNEL_LIST_EVENT){
 			ChannelListEvent cle = (ChannelListEvent)e;
 			System.out.println(information.getChannelSearch().getText());
@@ -129,19 +140,16 @@ public class ConnectionSetup implements IRCEventListener{
 				}
 			}
 		}
-		else if(e.getType()==Type.ERROR){
-			//TODO: Create content
-		}
-		else if(e.getType()==Type.INVITE_EVENT){
-			//TODO: Create content
-		}
-		// User Related
+		
+		// Adds a user to the user list when a new one joins the channel
 		else if(e.getType() == Type.JOIN) {
 			JoinEvent je = (JoinEvent) e;
 			User user = new User(je.getNick(), je.getChannel());
 			
 			((ChannelChat)chatWindow.get((session.getChannels().size())-1)).getUserList().addUser(user);
 		}
+		
+		// Creates a channel window when you get the JOIN_COMPLETE event
 		else if(e.getType() == Type.JOIN_COMPLETE)
 		{
 			JoinCompleteEvent jce = (JoinCompleteEvent)e;
@@ -167,6 +175,8 @@ public class ConnectionSetup implements IRCEventListener{
 			
 			ccObject.setUserList(new ChannelUsers(nicks));
 		}
+		
+		// Informs the user when someone is kicked, or disposes the window if the user is kicked himself
 		else if(e.getType()==Type.KICK_EVENT){
 			KickEvent ke = (KickEvent)e;
 			ChatWindow ccWindow = chatWindow.get(findIndex(ke.getChannel().getName()));
@@ -185,10 +195,8 @@ public class ConnectionSetup implements IRCEventListener{
 			ccWindow.getOutText().recieveMessage(message,"Kick");
 			}
 		}
-		else if(e.getType()==Type.MODE_EVENT){
-			//TODO: Create content
-		}
 		
+		// Adds the message of the day to the ServerInformation pane
 		else if(e.getType() == Type.MOTD)
 		{
 			MotdEvent me = (MotdEvent) e;
@@ -196,6 +204,8 @@ public class ConnectionSetup implements IRCEventListener{
 			if(message.startsWith("-")){message = message;}
 			information.getServerText().recieveMessage(message, "Motd");
 		}
+		
+		// Changes the content of the user list when a user changes his or her name
 		else if(e.getType() == Type.NICK_CHANGE) {
 			NickChangeEvent nce = (NickChangeEvent) e;
 			String oldnick = nce.getOldNick();
@@ -208,12 +218,16 @@ public class ConnectionSetup implements IRCEventListener{
 				}
 			}
 		}
+		
+		// Sends a notice to a channel window or the ServerInformation pane, depending on where it's directed towards
 		else if(e.getType() == Type.NOTICE){
 			NoticeEvent ne = (NoticeEvent) e;
 			message = ne.getNoticeMessage();
 			if(ne.getChannel() != null) chatWindow.get(findIndex(ne.getChannel().getName())).getOutText().recieveMessage(message, "Notice");
 			else information.getServerText().recieveMessage(message, "Notice");
 		}
+		
+		// Removes a user from the user list when he leaves, or disposes the window if the user itself parted from the channel
 		else if(e.getType()==Type.PART){
 			PartEvent pe = (PartEvent)e;
 			ChatWindow ccWindow = chatWindow.get(findIndex(pe.getChannel().getName()));
@@ -230,6 +244,8 @@ public class ConnectionSetup implements IRCEventListener{
 				ccWindow.getOutText().recieveMessage(message, "Part");
 			}
 		}
+		
+		// Receives a private message and adds it to a chat window, creating a new one if necessary
 		else if(e.getType()==Type.PRIVATE_MESSAGE){
 			MessageEvent me = (MessageEvent) e;
 			UserChat ccWindow;
@@ -257,20 +273,13 @@ public class ConnectionSetup implements IRCEventListener{
 			// writes message in the window belonging to the channel that recieved the message.
 			ccWindow.getOutText().recieveMessage(message, "Message");
 		}
+		
+		// Removes a user from the list when he quits the channel
 		else if(e.getType() == Type.QUIT) {
 			QuitEvent qe = (QuitEvent) e;
 			for(Channel channelInstance : qe.getChannelList()){
 				((ChannelChat)chatWindow.get(findIndex(channelInstance.getName()))).getUserList().removeUser(qe.getNick());
 			}
-		}
-		else if(e.getType()==Type.SERVER_INFORMATION){
-			//TODO: Create content
-		}
-		else if(e.getType()==Type.SERVER_VERSION_EVENT){
-			//TODO: Create content
-		}
-		else if(e.getType()==Type.TOPIC){
-			//TODO: Create content
 		}
 		
 		// Creates a message string with information about a /who event and sends it to the ServerInformation pane
@@ -319,7 +328,6 @@ public class ConnectionSetup implements IRCEventListener{
 			
 			information.getServerText().recieveMessage(message, "who");
 		}
-		System.out.println(e.getType() + " : " + e.getRawEventData());
 	}
 	/**
 	 * Finds the index of the chatWindow for a named channel.
@@ -337,8 +345,12 @@ public class ConnectionSetup implements IRCEventListener{
 		
 	}
 	
+	/**
+	 * Checks if a name is equal to the name of the active user
+	 * @param name Name to be checked
+	 * @return True if name is equal, otherwise false
+	 */
 	private boolean isMe(String name){
-		System.out.println(name+ " " +myProfile.getName());
 		if(name.matches("~"+myProfile.getName())||name.equals(myProfile.getName())){
 			return true;
 		}
@@ -350,7 +362,7 @@ public class ConnectionSetup implements IRCEventListener{
 	 * Taken from http://hig-irc.googlecode.com/svn/trunk/src/src/irc/model/ConnectModel.java
 	 * @param timer Milliseconds to wait
 	 */
-	public void waiting (int timer) {
+	private void waiting (int timer) {
 		long time0, time1;
 		time0 = System.currentTimeMillis();
 		do {
