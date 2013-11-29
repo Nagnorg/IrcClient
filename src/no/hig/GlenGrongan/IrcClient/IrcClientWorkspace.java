@@ -38,11 +38,13 @@ import jerklib.Session;
  *
  */
 public class IrcClientWorkspace extends JFrame{
-	JPanel serverListPanel;
 	ConnectionList connectionList;	// The connectionlist of the program.
 	ConnectOptions cOptions;		// A frame for creating a new connection.
 	ConnectionManager conManager;
 	Profile profile;				// Profile of the clientuser.
+	
+	JPanel serverListPanel;
+	JToolBar workspaceToolbar;
 	
 	Preferences pref;
 	ResourceBundle res;
@@ -59,11 +61,12 @@ public class IrcClientWorkspace extends JFrame{
 		
 
 		
-		JToolBar workspaceToolbar = createToolbar();
+		workspaceToolbar = createToolbar();
 		add(workspaceToolbar, BorderLayout.NORTH);
-		workspaceToolbar.setVisible(true);
+		workspaceToolbar.setVisible(pref.getBoolean("workspace.toolbarVisible", true));
 		
 		JMenuBar workspaceMenu = createMenu();
+		setJMenuBar(workspaceMenu);
 		
 		
 		addWindowListener(new java.awt.event.WindowAdapter() {
@@ -79,6 +82,7 @@ public class IrcClientWorkspace extends JFrame{
 	   				pref.putInt("window height", d.height);
 	   				pref.putInt("window x pos", p.x);
 	   				pref.putInt("window y pos", p.y);
+	   				pref.putBoolean("workspace.toolbarVisible", workspaceToolbar.isVisible());
 	   			} 
 	    	});
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -103,10 +107,54 @@ public class IrcClientWorkspace extends JFrame{
 	// Creates the menu for the client.
 	private JMenuBar createMenu(){
 		JMenuItem newConnectionItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.newConnection"));
-		JMenuItem removeConnectionItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.removeConnection"));
-		JMenuItem customizeEventItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.customizeEvents"));
+		newConnectionItem.setMnemonic('N');
+		newConnectionItem.addActionListener(new NewConnection());
 		
-		return null;
+		JMenuItem removeConnectionItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.removeConnection"));
+		removeConnectionItem.setMnemonic('R');
+		removeConnectionItem.addActionListener(new RemoveConnection());
+		
+		JMenuItem customizeEventItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.customizeEvents"));
+		customizeEventItem.setMnemonic('C');
+		customizeEventItem.addActionListener(new Customize());
+		
+		JMenuItem changeLanguageItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.languageItem"));
+		changeLanguageItem.setMnemonic('L');
+		
+		JMenuItem toolbarItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.toolbarItem"));
+		toolbarItem.setMnemonic('T');
+		toolbarItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				if(workspaceToolbar.isVisible() == true) workspaceToolbar.setVisible(false);
+				else workspaceToolbar.setVisible(true);
+			}
+		});
+		
+		JMenuItem windowHelpItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.windowHelpItem"));
+		JMenuItem commandHelpItem = new JMenuItem(res.getString("IrcClientWorkspace.menu.commandHelpItem"));
+		
+		JMenu fileMenu = new JMenu(res.getString("IrcClientWorkspace.menu.file"));
+		fileMenu.setMnemonic('F');
+		fileMenu.add(newConnectionItem);
+		fileMenu.add(removeConnectionItem);
+		fileMenu.add(customizeEventItem);
+		JMenu settingsMenu = new JMenu(res.getString("IrcClientWorkspace.menu.settings"));
+		settingsMenu.setMnemonic('S');
+		settingsMenu.add(changeLanguageItem);
+		settingsMenu.add(toolbarItem);
+		JMenu helpMenu = new JMenu(res.getString("IrcClientWorkspace.menu.help"));
+		helpMenu.setMnemonic('H');
+		helpMenu.add(windowHelpItem);
+		helpMenu.add(commandHelpItem);
+		
+		
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.add(fileMenu);
+		menuBar.add(settingsMenu);
+		menuBar.add(helpMenu);
+		
+		
+		return menuBar;
 		
 	}
 	
