@@ -165,7 +165,16 @@ public class ChannelChat extends ChatWindow{
 						case "/mute": 	break;
 						case "/invite":	break;
 						case "/modes": 	break;
-						case "/setmode":
+						case "/setmode":break;
+						case "/who": 	if(command.length == 2) channel.getSession().who(command[1]);
+										else outText.errorMessage("Not enough parameters");
+										break;
+						case "/whois":  if(command.length == 2) channel.getSession().whois(command[1]);
+										else outText.errorMessage("Not enough parameters");
+										break;
+						case "/whowas": if(command.length == 2) channel.getSession().whoWas(command[1]);
+										else outText.errorMessage("Not enough parameters");
+										break;
 						case "/mode": 	break;
 						case "/msg": 	if(command.length == 2){		// Sends a private message to user.
 											String[] parameter = command[1].split(" ", 2);

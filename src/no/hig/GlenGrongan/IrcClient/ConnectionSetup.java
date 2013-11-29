@@ -268,17 +268,52 @@ public class ConnectionSetup implements IRCEventListener{
 		else if(e.getType()==Type.TOPIC){
 			//TODO: Create content
 		}
-		else if(e.getType()==Type.WHO_EVENT){
+		
+		// Creates a message string with information about a /who event and sends it to the ServerInformation pane
+		else if(e.getType()== Type.WHO_EVENT)
+		{
 			WhoEvent we = (WhoEvent)e;
-			//TODO: Create content
+			message = "\n";
+			
+			message += res.getString("IrcClientConnectionSetup.whoEvent.nick") +we.getNick()+ "\n";
+			message += res.getString("IrcClientConnectionSetup.whoEvent.hostName") +we.getHostName()+ "\n";
+			message += res.getString("IrcClientConnectionSetup.whoEvent.userName") +we.getUserName()+ "\n";
+			message += res.getString("IrcClientConnectionSetup.whoEvent.realName") +we.getRealName()+ "\n";
+			message += we.getNick()+ " " +res.getString("IrcClientConnectionSetup.whoEvent.location1") +we.getServerName()+ " , " +we.getHopCount()+ " " +res.getString("IrcClientConnectionSetup.whoEvent.location2");
+			message += (we.isAway()) ? res.getString("IrcClientConnectionSetup.whoEvent.here") : res.getString("IrcClientConnectionSetup.whoEvent.away");
+			
+			information.getServerText().recieveMessage(message, "who");
 		}
+		
+		// Creates a message string with information about a /whois event and sends it to the ServerInformation pane
 		else if(e.getType()==Type.WHOIS_EVENT){
 			WhoisEvent wie = (WhoisEvent)e;
-			//TODO: Create content
+			message = "\n";
+			
+			message += res.getString("IrcClientConnectionSetup.whoEvent.nick") +wie.getUser()+ "\n";
+			message += res.getString("IrcClientConnectionSetup.whoEvent.userName") +wie.getHost()+ "\n";
+			message += res.getString("IrcClientConnectionSetup.whoEvent.connections");
+			for(String channel : wie.getChannelNames()) {
+				message += channel+ " ";
+			}
+			message += "\n";
+			message += (wie.isAnOperator()) ? res.getString("IrcClientConnectionSetup.whoEvent.isOp") : res.getString("IrcClientConnectionSetup.whoEvent.isNotOp");
+			message += (wie.isIdle()) ? res.getString("IrcClientConnectionSetup.whoEvent.here") : res.getString("IrcClientConnectionSetup.whoEvent.away");
+			
+			information.getServerText().recieveMessage(message, "whois");
 		}
+		
+		// Creates a message string with information about a /whowas event and sends it to the ServerInformation pane
 		else if(e.getType()==Type.WHOWAS_EVENT){
 			WhowasEvent wwe = (WhowasEvent)e;
-			//TODO: Create content
+			message = "\n";
+			
+			message += res.getString("IrcClientConnectionSetup.whoEvent.nick") +wwe.getNick()+ "\n";
+			message += res.getString("IrcClientConnectionSetup.whoEvent.hostName") +wwe.getHostName()+ "\n";
+			message += res.getString("IrcClientConnectionSetup.whoEvent.userName") +wwe.getUserName()+ "\n";
+			message += res.getString("IrcClientConnectionSetup.whoEvent.realName") +wwe.getRealName()+ "\n";
+			
+			information.getServerText().recieveMessage(message, "who");
 		}
 		System.out.println(e.getType() + " : " + e.getRawEventData());
 	}
