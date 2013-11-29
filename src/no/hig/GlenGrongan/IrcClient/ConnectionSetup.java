@@ -1,17 +1,10 @@
 package no.hig.GlenGrongan.IrcClient;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
-
-import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import jerklib.Channel;
 import jerklib.ConnectionManager;
@@ -20,7 +13,6 @@ import jerklib.Session;
 import jerklib.events.AwayEvent;
 import jerklib.events.ChannelListEvent;
 import jerklib.events.ConnectionCompleteEvent;
-import jerklib.events.ConnectionLostEvent;
 import jerklib.events.CtcpEvent;
 import jerklib.events.IRCEvent;
 import jerklib.events.JoinCompleteEvent;

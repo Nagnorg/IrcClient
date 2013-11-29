@@ -9,14 +9,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
-import java.util.List;
-
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import jerklib.Channel;
-import jerklib.Session;
-import jerklib.events.modes.ModeAdjustment;
 /**
  * Class creating and maintaining the chatwindow of a channel. Originally known as chatWindow,
  * but were later made to inherit from this class instead.

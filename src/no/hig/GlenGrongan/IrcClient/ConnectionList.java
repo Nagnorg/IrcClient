@@ -4,26 +4,21 @@
 package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import jerklib.Channel;
 import jerklib.ConnectionManager;
-import jerklib.Session;
 
 /**
  * Class for containing and maintaining most of the "global" information. 

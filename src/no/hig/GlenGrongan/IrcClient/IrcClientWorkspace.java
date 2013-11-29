@@ -5,9 +5,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
@@ -15,22 +13,13 @@ import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.JToolBar;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-
-import jerklib.Channel;
 import jerklib.ConnectionManager;
 import jerklib.Profile;
-import jerklib.Session;
 /**
  * Class containing creation of GUI and base functionality for the client.
  * @version 0.2

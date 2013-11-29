@@ -1,39 +1,24 @@
 package no.hig.GlenGrongan.IrcClient;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JList;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-
-import jerklib.Session;
 /**
  * Class creating and maintaining the userlists found in chatwindows for chatchannels.
- * @author Martin
- *
  */
 public class ChannelUsers extends JPanel {
 	List<User> users;
 
 	JList userList;
 	DefaultListModel userListModel;
-	//JTextField channelSearch;
-	//JButton channelSearchButton;
 	JScrollPane userListScroller;
 	/**
 	 * Initializes the object as empty.
