@@ -294,7 +294,6 @@ import java.util.List;
 		// Handles the creation of new servers
 				addButton.addActionListener(
 						new ActionListener(){
-							// TODO: String resources
 							@Override
 							public void actionPerformed(ActionEvent e) {
 								String name = JOptionPane.showInputDialog(null, (res.getString("IrcClientConnectOption.addButton.dialogContent")), (res.getString("IrcClientConnectOption.addButton.dialogHeader")), JOptionPane.PLAIN_MESSAGE);
